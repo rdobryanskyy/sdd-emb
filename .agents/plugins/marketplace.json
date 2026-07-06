@@ -1,14 +1,14 @@
 {
-  "name": "sdd",
+  "name": "sdd-emb",
   "interface": {
     "displayName": "SDD — Spec-Driven Development"
   },
   "plugins": [
     {
-      "name": "sdd",
+      "name": "sdd-emb",
       "source": {
         "source": "url",
-        "url": "https://github.com/rdobryanskyy/sdd"
+        "url": "https://github.com/rdobryanskyy/sdd-emb"
       },
       "category": "Productivity"
     }

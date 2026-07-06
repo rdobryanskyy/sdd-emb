@@ -21,8 +21,8 @@ let tmp: string
 let outside: string
 
 beforeEach(() => {
-  tmp = mkdtempSync(join(tmpdir(), 'sdd-paths-'))
-  outside = mkdtempSync(join(tmpdir(), 'sdd-outside-'))
+  tmp = mkdtempSync(join(tmpdir(), 'sdd-emb-paths-'))
+  outside = mkdtempSync(join(tmpdir(), 'sdd-emb-outside-'))
   mkdirSync(join(tmp, 'docs', 'features', 'demo'), { recursive: true })
   writeFileSync(join(tmp, 'docs', 'features', 'demo', 'spec.md'), '# demo\n')
   writeFileSync(join(outside, 'secret.md'), 'leak me\n')
@@ -40,7 +40,7 @@ describe('setProjectDir refusals', () => {
   })
 
   it('rejects a dir with no docs/ or .git marker', () => {
-    const bare = mkdtempSync(join(tmpdir(), 'sdd-bare-'))
+    const bare = mkdtempSync(join(tmpdir(), 'sdd-emb-bare-'))
     try {
       expect(() => setProjectDir(bare)).toThrow(/not a project root/)
     } finally {
@@ -109,7 +109,7 @@ describe('assertArtifactPath containment', () => {
 
 describe('safeStaticPath', () => {
   it('serves a real file, refuses traversal / missing / directory', () => {
-    const staticRoot = mkdtempSync(join(tmpdir(), 'sdd-static-'))
+    const staticRoot = mkdtempSync(join(tmpdir(), 'sdd-emb-static-'))
     try {
       writeFileSync(join(staticRoot, 'index.html'), '<html></html>')
       mkdirSync(join(staticRoot, 'sub'))

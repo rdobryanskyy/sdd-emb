@@ -67,10 +67,10 @@ the question that sets its depth dial; `plan-tests` always collapses to the inli
 in `spec.md`; `clarify` auto-skips when the spec has zero §8 open questions.
 
 **Missing `.route`** → behave as `standard` (the pre-route default) and say so in the handoff —
-«route standard (default — no `.route`; run `/sdd:classify-size <slug>`)» — fully back-compatible.
+«route standard (default — no `.route`; run `/sdd-emb:classify-size <slug>`)» — fully back-compatible.
 
 **Mid-flight override.** The route steers **handoffs only — it never makes a stage refuse**. To
-change course: re-run `/sdd:classify-size <slug>` (rewrites `.route`), or simply invoke a skipped
+change course: re-run `/sdd-emb:classify-size <slug>` (rewrites `.route`), or simply invoke a skipped
 stage directly — it runs normally regardless of the route.
 
 ### The N/A conditions (the fast-lane table)

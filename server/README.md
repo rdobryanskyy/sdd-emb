@@ -2,7 +2,7 @@
 
 A local, **opt-in, read-only** browser dashboard for the SDD pipeline. It reads `docs/features/`
 straight off disk, renders every artifact, and **drives the pipeline** — a click in the browser sends
-a `/sdd:<skill> <slug>` command back into your live Claude Code session, which runs the skill and
+a `/sdd-emb:<skill> <slug>` command back into your live Claude Code session, which runs the skill and
 streams progress back to the browser. It never edits artifact text — all writes happen through the
 pipeline in the terminal.
 
@@ -24,7 +24,7 @@ curl -fsSL https://bun.sh/install | bash   # or: brew install bun
 bun --version                              # sanity check
 ```
 
-**2. Enable the dashboard** in your project's `.claude/sdd.local.md` (the file the pipeline
+**2. Enable the dashboard** in your project's `.claude/sdd-emb.local.md` (the file the pipeline
 auto-creates with documented defaults — `specify`/`implement`/`start` will create it if absent):
 
 ```yaml
@@ -35,7 +35,7 @@ dashboard_port: 4178       # optional — the loopback port (scans upward if bus
 **3. Open a Claude Code session in your project and run:**
 
 ```
-/sdd:start
+/sdd-emb:start
 ```
 
 It hands the server your project directory, confirms the channel works both ways, and prints the URL:
@@ -54,10 +54,10 @@ Open that URL in a browser. That's it.
 |---|---|
 | **Pick a feature** (sidebar) | See its pipeline as a per-step checklist: `done` / `skipped` / `pending` / `blocked`, derived from the artifacts on disk. An XS feature shows *skipped* stages — not gaps. |
 | **Open an artifact** (tabs) | Renders markdown and **mermaid** (C4 / sequence / ER diagrams) from vendored libs, fully offline; mermaid (3.3 MB) loads lazily, only when an artifact actually contains a diagram. OpenAPI shows as plain YAML. |
-| **▶ Run next stage** / per-stage **run** | Sends `/sdd:<skill> <slug>` into your session. Claude runs the skill; the session-activity pane streams its log + the handoff. The topbar **depth** selector sets `--depth` (default `easy`). |
-| **⚒ Fix** (appears on a CHANGES REQUESTED review) | Runs `/sdd:fix <slug>` to address the review findings. |
-| **+ new** | Runs `/sdd:specify <slug>` to start a new feature. |
-| **roadmap** modal | Renders `docs/roadmap.md`; its action buttons queue the repo-wide `/sdd:roadmap` and `/sdd:survey`. |
+| **▶ Run next stage** / per-stage **run** | Sends `/sdd-emb:<skill> <slug>` into your session. Claude runs the skill; the session-activity pane streams its log + the handoff. The topbar **depth** selector sets `--depth` (default `easy`). |
+| **⚒ Fix** (appears on a CHANGES REQUESTED review) | Runs `/sdd-emb:fix <slug>` to address the review findings. |
+| **+ new** | Runs `/sdd-emb:specify <slug>` to start a new feature. |
+| **roadmap** modal | Renders `docs/roadmap.md`; its action buttons queue the repo-wide `/sdd-emb:roadmap` and `/sdd-emb:survey`. |
 | **Answer a decision question** | When a dashboard-driven run genuinely needs a human choice, a question card with option buttons appears in the activity pane (`dashboard_ask`) — your click resumes the paused run. Only the option *index* leaves the browser. |
 | **Change artifacts any other way** (a terminal-driven skill, `vim docs/…`) | The panel live-refreshes — `fs.watch` on `docs/` pushes a WS refresh within ~1 s. No dashboard involvement needed. |
 
@@ -75,7 +75,7 @@ resumes. Answering in **your terminal** always works too.
 
 ## Configuration
 
-Read from `.claude/sdd.local.md` (per-project, git-ignored):
+Read from `.claude/sdd-emb.local.md` (per-project, git-ignored):
 
 | Key | Default | Meaning |
 |---|---|---|
@@ -89,7 +89,7 @@ Environment overrides (handy for testing / unusual setups):
 | `SDD_DASHBOARD_ENABLED=1` | Force-enable without the settings file. |
 | `SDD_DASHBOARD_PORT=<n>` | Default port (a `dashboard_port` in settings still wins). |
 | `SDD_DASHBOARD_TOKEN=<hex>` | Pin the capability token (otherwise random per session). |
-| `CLAUDE_PROJECT_DIR=<path>` | Project root at boot (Claude Code sets this; `/sdd:start` overrides authoritatively). |
+| `CLAUDE_PROJECT_DIR=<path>` | Project root at boot (Claude Code sets this; `/sdd-emb:start` overrides authoritatively). |
 
 ---
 
@@ -100,9 +100,9 @@ Environment overrides (handy for testing / unusual setups):
   `<project>/docs/` with an extension allowlist (`.md` / `.yaml` / `.yml` / `.json` / `.size`);
   `.git`, missing files, and anything outside `docs/` are refused. There is no write route.
 - **Capability token.** Every `/api` route (including the two mutating routes — run-a-command and
-  answer-a-question — which touch no disk) requires the per-session token issued by `/sdd:start`
+  answer-a-question — which touch no disk) requires the per-session token issued by `/sdd-emb:start`
   (in the URL), plus `Origin`/`Host` loopback checks — so another local page can't POST to your port.
-- **No command injection.** Inbound `/sdd:` lines are built **only** from a server-side allowlist
+- **No command injection.** Inbound `/sdd-emb:` lines are built **only** from a server-side allowlist
   (validated skill name + `^[a-z0-9][a-z0-9-]*$` slug + `easy|medium|hard` depth). Browser text never
   becomes an arbitrary command. Answers relay only an option **label Claude itself authored** in
   `dashboard_ask` — the browser contributes a single validated index into that list.
@@ -116,13 +116,13 @@ Environment overrides (handy for testing / unusual setups):
 
 | Symptom | Fix |
 |---|---|
-| `/mcp` shows `sdd-dashboard` **failed** | Bun isn't installed (the `.mcp.json` launches `bun`). Install Bun, reopen the session. |
-| `/sdd:start` says **"not enabled"** | Set `dashboard_enabled: true` in `.claude/sdd.local.md`, re-run `/sdd:start`. |
-| Browser shows **"no token in URL"** | Open the exact URL `/sdd:start` printed (the token authorises the session). |
-| **"project dir unresolved"** | Run `/sdd:start` inside the project (it hands the real path over), or set `CLAUDE_PROJECT_DIR`. |
+| `/mcp` shows `sdd-emb-dashboard` **failed** | Bun isn't installed (the `.mcp.json` launches `bun`). Install Bun, reopen the session. |
+| `/sdd-emb:start` says **"not enabled"** | Set `dashboard_enabled: true` in `.claude/sdd-emb.local.md`, re-run `/sdd-emb:start`. |
+| Browser shows **"no token in URL"** | Open the exact URL `/sdd-emb:start` printed (the token authorises the session). |
+| **"project dir unresolved"** | Run `/sdd-emb:start` inside the project (it hands the real path over), or set `CLAUDE_PROJECT_DIR`. |
 | A click does nothing | The session is busy or waiting on a question in your terminal — the command is queued; it runs when Claude is idle at the prompt. |
-| The panel doesn't update when files change | The docs watcher wasn't armed (the server didn't know your project dir yet) — run `/sdd:start`. Note: changes inside a **symlinked** subdirectory of `docs/` don't emit watch events; keep artifacts on real paths. |
-| Port differs from 4178 | It was busy; `/sdd:start` prints the actual port it bound. |
+| The panel doesn't update when files change | The docs watcher wasn't armed (the server didn't know your project dir yet) — run `/sdd-emb:start`. Note: changes inside a **symlinked** subdirectory of `docs/` don't emit watch events; keep artifacts on real paths. |
+| Port differs from 4178 | It was busy; `/sdd-emb:start` prints the actual port it bound. |
 
 ---
 
@@ -130,15 +130,15 @@ Environment overrides (handy for testing / unusual setups):
 
 ```
  Browser tab (dashboard)              Claude Code session
-  index.html / app.js  ── HTTP/WS ──┐   Claude runs /sdd skills
+  index.html / app.js  ── HTTP/WS ──┐   Claude runs /sdd-emb skills
                                      │        ▲
                        ┌─────────────┴────────┴──────────────┐
-                       │  sdd-dashboard MCP server (Bun)      │
+                       │  sdd-emb-dashboard MCP server (Bun)      │
                        │  • StdioServerTransport ⇄ Claude     │
                        │  • Bun.serve() HTTP+WS ⇄ browser     │
                        │  • reads/writes <PROJECT>/docs/ only │
                        │  • inbound: notifications/claude/    │
-                       │      channel  (/sdd:<skill> <slug>)  │
+                       │      channel  (/sdd-emb:<skill> <slug>)  │
                        │  • outbound: dashboard_* MCP tools   │
                        └──────────────────────────────────────┘
 ```
@@ -164,7 +164,7 @@ The WS channel is **push-only** (the browser talks back over HTTP). Every frame 
 | `type` | Sent when | Payload |
 |---|---|---|
 | `hello` | a client connects | `project` |
-| `project` | `/sdd:start` hands over the project dir | `project` |
+| `project` | `/sdd-emb:start` hands over the project dir | `project` |
 | `log` | Claude calls `dashboard_log` | `message`, `slug`, `stage`, `level` |
 | `update` | Claude calls `dashboard_update` | `slug`, `stage`, `status`, `progress`, `message` |
 | `done` | Claude calls `dashboard_done` | `slug`, `stage`, `summary`, `verdict`, `review_files`, `next_command` |
@@ -198,5 +198,5 @@ injected fakes — the real `fs.watch` contract is timing-flaky in CI, so it is 
 smoke run instead), `frontmatter.test.ts`.
 
 **Deferred (designed, not built):** multi-session parallelization (a shared hub with leader
-election). The MVP's choices — token per session, `session_id`-tagged WS frames, `/sdd:start`
+election). The MVP's choices — token per session, `session_id`-tagged WS frames, `/sdd-emb:start`
 project handover — are already hub-compatible.

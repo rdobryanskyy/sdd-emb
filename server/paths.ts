@@ -49,7 +49,7 @@ function walkUp(start: string): string | null {
 /**
  * Resolution order (the plan's contract):
  *   1. process.env.CLAUDE_PROJECT_DIR  (Claude Code sets this for the session)
- *   2. an explicit handover from /sdd:start (setProjectDir — authoritative, wins)
+ *   2. an explicit handover from /sdd-emb:start (setProjectDir — authoritative, wins)
  *   3. upward walk from cwd for docs/ or .git
  *   4. null → callers hard-refuse with a clear message
  *
@@ -66,7 +66,7 @@ function resolveBootDir(): string | null {
 
 PROJECT_DIR = resolveBootDir()
 
-/** The authoritative handover from /sdd:start (runs in-session where cwd IS the project). */
+/** The authoritative handover from /sdd-emb:start (runs in-session where cwd IS the project). */
 export function setProjectDir(dir: string): string {
   const abs = resolve(dir)
   if (!existsSync(abs)) throw new Error(`project dir does not exist: ${abs}`)
@@ -88,7 +88,7 @@ export function getProjectDir(): string | null {
 export function requireProjectDir(): string {
   if (!PROJECT_DIR) {
     throw new Error(
-      'project dir unresolved — run /sdd:start in the project (or set CLAUDE_PROJECT_DIR)',
+      'project dir unresolved — run /sdd-emb:start in the project (or set CLAUDE_PROJECT_DIR)',
     )
   }
   return PROJECT_DIR

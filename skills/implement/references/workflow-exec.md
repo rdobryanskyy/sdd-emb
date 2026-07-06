@@ -10,7 +10,7 @@ The shape of the work is `tasks.json` — different every feature. So the engine
 
 ```js
 export const meta = {
-  name: 'sdd-implement-<slug>',
+  name: 'sdd-emb-implement-<slug>',
   description: 'TDD-implement <slug> from tasks.json (dynamic DAG)',
   phases: [{ title: 'Implement' }, { title: 'Review' }],
 }

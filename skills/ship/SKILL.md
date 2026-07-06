@@ -6,7 +6,7 @@ agents: []
 description: >
   Use to close the loop after review — verify the feature actually works, write the changelog /
   knowledge-base note, and open the pull request. Triggers on "ship {slug}", "open a PR for {slug}",
-  "changelog for {slug}", "prepare {slug} for merge", "/sdd:ship {slug}", "відправ фічу {slug}",
+  "changelog for {slug}", "prepare {slug} for merge", "/sdd-emb:ship {slug}", "відправ фічу {slug}",
   "створи PR для {slug}", "changelog для {slug}". Re-runs the gate, runs the app/feature to confirm
   the spec's outcomes for real (not just green tests), drafts a changelog + PR body that link spec/
   AC/ADRs, and proposes the PR command for whatever forge the repo uses. Never auto-merges to main.
@@ -37,7 +37,7 @@ The implementer (drives) + the reviewer who signed off in `review`.
 3. **Prepare the PR.** Ensure the work is on a feature branch (not the default branch). Draft the PR body from [`./templates/pr-body.md`](./templates/pr-body.md): summary, the AC it satisfies, links to spec/sad/ADRs, the `SDD-Task` commit list, the test + verification evidence, and any migration/rollback note.
 4. **Detect the forge + propose the PR command.** Inspect the remote: `github.com` → `gh pr create`; `gitlab.com`/self-hosted GitLab → `glab mr create`; otherwise print the branch + body for manual creation. **Propose** the command — do not run a push/PR to a shared remote without the user's go-ahead, and never merge to main.
 5. **Update the roadmap.** Move this feature's item to **Shipped** in `docs/roadmap.md` (via `roadmap`) — date + outcome + link to the feature folder + the PR/changelog — and remove it from **Now**. This is the anti-drift hook: delivery itself keeps the roadmap current. (No roadmap yet → skip; it's optional.)
-6. **Summary (terminal handoff).** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (terminal variant) — *What I did* (verification result: verified-working / what was deferred and why; the roadmap update) + *Review* (the changelog path + the PR) + *Run next* = **Done**: the PR command (or URL if the user ran it) — merging to main is your call; there is no `/sdd` successor.
+6. **Summary (terminal handoff).** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (terminal variant) — *What I did* (verification result: verified-working / what was deferred and why; the roadmap update) + *Review* (the changelog path + the PR) + *Run next* = **Done**: the PR command (or URL if the user ran it) — merging to main is your call; there is no `/sdd-emb` successor.
 
 ## Definition of Done
 

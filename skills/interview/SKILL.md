@@ -7,9 +7,9 @@ description: >
   Use BEFORE specify to stress-test a raw idea — pressure-test it before you commit to a
   spec. A Socratic interview that surfaces hidden assumptions, names tradeoffs, exposes
   imprecisions, and proposes fresh angles. Scope is any idea (product, content, business,
-  architecture, refactor approach), but in an SDD repo the natural exit is /sdd:specify on
+  architecture, refactor approach), but in an SDD repo the natural exit is /sdd-emb:specify on
   the surviving idea. Triggers on "interview {slug}", "stress test {slug}", "challenge this",
-  "poke holes", "rip this apart", "/sdd:interview {slug}", "погрилити", "розбери цю ідею",
+  "poke holes", "rip this apart", "/sdd-emb:interview {slug}", "погрилити", "розбери цю ідею",
   "розʼєби". Runs 3 phases (understand intent → surface tradeoffs and weak spots → propose
   new angles) via AskUserQuestion, ends with a summary of risks, alternatives, and the next
   step. Optional — the backbone starts at specify; reach for interview when the idea itself
@@ -106,7 +106,7 @@ strongest bet, with reasoning in `description`.
 1. {strongest} 2. {second} 3. {the one they wouldn't have reached alone}
 
 ## Next step
-{one concrete verb — usually "/sdd:specify <slug>" once the idea survives}
+{one concrete verb — usually "/sdd-emb:specify <slug>" once the idea survives}
 ```
 
 A full annotated medium-depth pass → [`references/annotated-pass.md`](references/annotated-pass.md).
@@ -119,7 +119,7 @@ checked against its mini/full format is this skill's **structural self-check**
 summary, **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
 (utility variant — `/clear` optional): *What I did* (the revised idea + its weakest spot) + *Review*
 (nothing on disk — the summary above is the artifact) + *Run next*: when the idea is a feature
-you intend to build, `/sdd:specify <slug>` turns the survivor into a spec; otherwise resume
+you intend to build, `/sdd-emb:specify <slug>` turns the survivor into a spec; otherwise resume
 whatever you were doing. Never end on a bare «Next: …».
 
 ## Anti-patterns

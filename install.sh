@@ -2,9 +2,9 @@
 # SDD installer for Codex CLI and Cursor (Claude Code installs natively via /plugin).
 #
 # SKILL.md is the open Agent Skills format, so both tools run the repo's skills unchanged.
-# The script copies the skills/ + agents/ subtree VERBATIM under <skills-root>/sdd/ (the
+# The script copies the skills/ + agents/ subtree VERBATIM under <skills-root>/sdd-emb/ (the
 # relative cross-links between skills, _shared/ and agents/ keep resolving by construction),
-# prefixes every skill name with `sdd-` (the bare review/design/api would collide with
+# prefixes every skill name with `sdd-emb-` (the bare review/design/api would collide with
 # generic names), and generates the host tool's functional agents from agents/*.md.
 # How each Claude-specific mechanism maps: skills/_shared/tool-adapters.md.
 #
@@ -14,7 +14,7 @@
 #   codex | cursor   target tool (claude just prints the native /plugin commands)
 #   --global         install under $HOME instead of the current directory
 #   --prefix DIR     install under DIR (overrides --global and $PWD; mainly for testing)
-#   --ref REF        git ref of rdobryanskyy/sdd to download (default: main)
+#   --ref REF        git ref of rdobryanskyy/sdd-emb to download (default: main)
 #   --src DIR        install from a local checkout instead of downloading
 #   --uninstall      remove a previous install from the chosen prefix and exit
 #
@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-REPO="rdobryanskyy/sdd"
+REPO="rdobryanskyy/sdd-emb"
 
 log()  { printf '%s\n' "$*"; }
 warn() { printf 'warning: %s\n' "$*" >&2; }
@@ -60,8 +60,8 @@ if [ "$TOOL" = "claude" ]; then
   cat <<'EOF'
 SDD installs natively in Claude Code — run inside a Claude Code session:
 
-  /plugin marketplace add rdobryanskyy/sdd
-  /plugin install sdd@sdd
+  /plugin marketplace add rdobryanskyy/sdd-emb
+  /plugin install sdd-emb@sdd-emb
 EOF
   exit 0
 fi
@@ -76,11 +76,11 @@ case "$TOOL" in
 esac
 
 # --- idempotent clean (also the uninstall path) ------------------------------------------
-rm -rf "${SKILLS_ROOT:?}/sdd"
-rm -f "$AGENTS_DIR"/sdd-*.toml "$AGENTS_DIR"/sdd-*.md
+rm -rf "${SKILLS_ROOT:?}/sdd-emb"
+rm -f "$AGENTS_DIR"/sdd-emb-*.toml "$AGENTS_DIR"/sdd-emb-*.md
 
 if [ "$UNINSTALL" = 1 ]; then
-  log "uninstalled sdd from $PREFIX ($TOOL)"
+  log "uninstalled sdd-emb from $PREFIX ($TOOL)"
   exit 0
 fi
 
@@ -93,8 +93,8 @@ INSTALL_DONE=0
 cleanup() {
   if [ -n "$CLEANUP_DIR" ]; then rm -rf "$CLEANUP_DIR"; fi
   if [ "$INSTALL_DONE" != 1 ]; then
-    rm -rf "${SKILLS_ROOT:?}/sdd"
-    rm -f "$AGENTS_DIR"/sdd-*.toml "$AGENTS_DIR"/sdd-*.md
+    rm -rf "${SKILLS_ROOT:?}/sdd-emb"
+    rm -f "$AGENTS_DIR"/sdd-emb-*.toml "$AGENTS_DIR"/sdd-emb-*.md
   fi
 }
 trap cleanup EXIT
@@ -111,56 +111,56 @@ if [ -z "$SRC" ]; then
 fi
 
 [ -f "$SRC/skills/specify/SKILL.md" ] \
-  || die "source $SRC does not look like the sdd repo (skills/specify/SKILL.md missing)"
+  || die "source $SRC does not look like the sdd-emb repo (skills/specify/SKILL.md missing)"
 
 # --- collision check: a marketplace install would list every skill twice ------------------
 # `codex plugin marketplace add` registers the ORIGINAL names ($specify); this script installs
-# the sdd- prefixed copies. Both at once → a doubled skill list. Warn, don't block (README:
+# the sdd-emb- prefixed copies. Both at once → a doubled skill list. Warn, don't block (README:
 # "pick one of the two paths").
 if [ "$TOOL" = "codex" ] && [ -f "$HOME/.codex/config.toml" ] \
-   && grep -q 'plugins."sdd@' "$HOME/.codex/config.toml" 2>/dev/null; then
-  warn "a marketplace install of sdd is already registered in ~/.codex/config.toml — adding the script install too will list each skill twice (\$specify AND \$sdd-specify); pick one path (see README), or remove the marketplace plugin"
+   && grep -q 'plugins."sdd-emb@' "$HOME/.codex/config.toml" 2>/dev/null; then
+  warn "a marketplace install of sdd-emb is already registered in ~/.codex/config.toml — adding the script install too will list each skill twice (\$specify AND \$sdd-emb-specify); pick one path (see README), or remove the marketplace plugin"
 fi
 
-# --- copy the subtree verbatim: <skills-root>/sdd/{skills,agents} ------------------------
-mkdir -p "$SKILLS_ROOT/sdd"
-cp -R "$SRC/skills" "$SKILLS_ROOT/sdd/skills"
-cp -R "$SRC/agents" "$SKILLS_ROOT/sdd/agents"
+# --- copy the subtree verbatim: <skills-root>/sdd-emb/{skills,agents} ------------------------
+mkdir -p "$SKILLS_ROOT/sdd-emb"
+cp -R "$SRC/skills" "$SKILLS_ROOT/sdd-emb/skills"
+cp -R "$SRC/agents" "$SKILLS_ROOT/sdd-emb/agents"
 
-# --- rename pass: frontmatter `name: <base>` → `name: sdd-<base>` ------------------------
+# --- rename pass: frontmatter `name: <base>` → `name: sdd-emb-<base>` ------------------------
 # The repo validator guarantees the exact line `name: <dirname>` AND that every skill dir name
 # matches [a-z0-9-]+ (no BRE metacharacters), so interpolating $base into the sed pattern is
 # safe on both GNU and BSD sed. A new skill with ./_+ etc. in its dir name would break this —
 # the validator rejects it first.
 n_skills=0
-for skill_md in "$SKILLS_ROOT"/sdd/skills/*/SKILL.md; do
+for skill_md in "$SKILLS_ROOT"/sdd-emb/skills/*/SKILL.md; do
   base="$(basename "$(dirname "$skill_md")")"
   tmp="${skill_md}.tmp"
-  sed "s/^name: ${base}\$/name: sdd-${base}/" "$skill_md" > "$tmp"
-  grep -q "^name: sdd-${base}\$" "$tmp" \
+  sed "s/^name: ${base}\$/name: sdd-emb-${base}/" "$skill_md" > "$tmp"
+  grep -q "^name: sdd-emb-${base}\$" "$tmp" \
     || die "rename failed for $skill_md (expected the exact line 'name: ${base}')"
   mv "$tmp" "$skill_md"
   n_skills=$((n_skills + 1))
 done
 
 # --- functional agents per tool -----------------------------------------------------------
-# (the verbatim copies under sdd/agents/ stay as documentation the skills cross-link)
+# (the verbatim copies under sdd-emb/agents/ stay as documentation the skills cross-link)
 mkdir -p "$AGENTS_DIR"
 n_agents=0
 
 if [ "$TOOL" = "cursor" ]; then
   for agent_md in "$SRC"/agents/*.md; do
     n="$(basename "$agent_md" .md)"
-    out="$AGENTS_DIR/sdd-${n}.md"
+    out="$AGENTS_DIR/sdd-emb-${n}.md"
     # rewrite two frontmatter lines only: the name (prefix) and the model (host-agnostic)
-    sed -e "1,/^---\$/ s/^name: ${n}\$/name: sdd-${n}/" \
+    sed -e "1,/^---\$/ s/^name: ${n}\$/name: sdd-emb-${n}/" \
         -e "1,/^---\$/ s/^model: .*/model: inherit/" \
         "$agent_md" > "$out"
-    grep -q "^name: sdd-${n}\$" "$out" \
+    grep -q "^name: sdd-emb-${n}\$" "$out" \
       || die "agent rewrite failed for $agent_md (expected the exact line 'name: ${n}')"
     n_agents=$((n_agents + 1))
   done
-else # codex: generate .codex/agents/sdd-<name>.toml (needs python3 — folded YAML description)
+else # codex: generate .codex/agents/sdd-emb-<name>.toml (needs python3 — folded YAML description)
   if command -v python3 >/dev/null 2>&1; then
     python3 - "$SRC/agents" "$AGENTS_DIR" <<'PYEOF'
 import functools
@@ -195,7 +195,7 @@ for md in sorted(src.glob("*.md")):
                 fm[key] = val
 
     desc = fm.get("description") or " ".join(desc_lines)
-    name = "sdd-" + fm["name"]
+    name = "sdd-emb-" + fm["name"]
     tools = fm.get("tools", "")
     writes = any(t.strip() in ("Write", "Edit") for t in tools.split(","))
     sandbox = "workspace-write" if writes else "read-only"
@@ -216,23 +216,23 @@ for md in sorted(src.glob("*.md")):
     (dst / f"{name}.toml").write_text(toml)
     print(f"  agent {name}.toml")
 PYEOF
-    n_agents="$(find "$AGENTS_DIR" -name 'sdd-*.toml' | wc -l | tr -dc '0-9')"
+    n_agents="$(find "$AGENTS_DIR" -name 'sdd-emb-*.toml' | wc -l | tr -dc '0-9')"
   else
-    warn "python3 not found — skipping Codex custom agents; skills install anyway and agent dispatch degrades to inline (see sdd/skills/_shared/agent-roster.md)"
+    warn "python3 not found — skipping Codex custom agents; skills install anyway and agent dispatch degrades to inline (see sdd-emb/skills/_shared/agent-roster.md)"
   fi
 fi
 
 # --- summary -------------------------------------------------------------------------------
 INSTALL_DONE=1
 log ""
-log "installed sdd ($TOOL):"
-log "  skills  → $SKILLS_ROOT/sdd  (${n_skills} skills)"
+log "installed sdd-emb ($TOOL):"
+log "  skills  → $SKILLS_ROOT/sdd-emb  (${n_skills} skills)"
 if [ "$n_agents" -gt 0 ]; then
-  log "  agents  → $AGENTS_DIR  (${n_agents} agents, sdd-* prefixed)"
+  log "  agents  → $AGENTS_DIR  (${n_agents} agents, sdd-emb-* prefixed)"
 fi
 case "$TOOL" in
-  codex)  log "  invoke  → type \$sdd-… in codex, e.g. \$sdd-specify <slug>" ;;
-  cursor) log "  invoke  → type / in the chat and pick sdd-…, e.g. sdd-specify" ;;
+  codex)  log "  invoke  → type \$sdd-emb-… in codex, e.g. \$sdd-emb-specify <slug>" ;;
+  cursor) log "  invoke  → type / in the chat and pick sdd-emb-…, e.g. sdd-emb-specify" ;;
 esac
-log "  mapping → $SKILLS_ROOT/sdd/skills/_shared/tool-adapters.md"
+log "  mapping → $SKILLS_ROOT/sdd-emb/skills/_shared/tool-adapters.md"
 log "  remove  → re-run with --uninstall (re-running install is also safe: it cleans first)"

@@ -8,7 +8,7 @@
 set -euo pipefail
 
 EVALS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$EVALS_DIR/.." && pwd)"   # the sdd plugin under test — loaded via --plugin-dir
+REPO_ROOT="$(cd "$EVALS_DIR/.." && pwd)"   # the sdd-emb plugin under test — loaded via --plugin-dir
 MAX_TURNS="${SDD_EVAL_MAX_TURNS:-40}"
 # NB: an EMPTY array + `set -u` breaks on macOS bash 3.2 — expand with the
 # ${arr[@]+"${arr[@]}"} idiom everywhere.
@@ -24,18 +24,18 @@ run_scenario() {
   [ -d "$dir" ] || { echo "FATAL: no such scenario: $name" >&2; return 2; }
 
   local work meta
-  work="$(mktemp -d "${TMPDIR:-/tmp}/sdd-eval-$name.XXXXXX")"
-  meta="$(mktemp -d "${TMPDIR:-/tmp}/sdd-eval-$name-meta.XXXXXX")" # transcript + judge prompt live OUTSIDE the repo under test
+  work="$(mktemp -d "${TMPDIR:-/tmp}/sdd-emb-eval-$name.XXXXXX")"
+  meta="$(mktemp -d "${TMPDIR:-/tmp}/sdd-emb-eval-$name-meta.XXXXXX")" # transcript + judge prompt live OUTSIDE the repo under test
   echo "== $name  (workdir: $work)"
 
   # 1. Fixture → git baseline.
   cp -R "$dir/fixture/." "$work/"
   git -C "$work" init -q
   git -C "$work" add -A
-  git -C "$work" -c user.email=eval@sdd -c user.name=sdd-eval commit -qm baseline
+  git -C "$work" -c user.email=eval@sdd-emb -c user.name=sdd-emb-eval commit -qm baseline
 
   # 2. The run under test — headless; the prompt pins --depth=easy (a headless
-  #    run cannot answer AskUserQuestion). --plugin-dir loads the sdd plugin
+  #    run cannot answer AskUserQuestion). --plugin-dir loads the sdd-emb plugin
   #    from THIS checkout, so the eval exercises the working tree, not whatever
   #    version happens to be installed.
   # --allowedTools lets the run actually `git commit` in the throwaway workdir —

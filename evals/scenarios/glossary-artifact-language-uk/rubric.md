@@ -1,6 +1,6 @@
 # Rubric — glossary-artifact-language-uk
 
-The fixture's `.claude/sdd.local.md` sets `artifact_language: uk`; the prompt supplies two term
+The fixture's `.claude/sdd-emb.local.md` sets `artifact_language: uk`; the prompt supplies two term
 definitions in English and never names a language itself — so Ukrainian prose can only come from
 the skill honouring the setting.
 

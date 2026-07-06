@@ -1,17 +1,17 @@
 /**
  * The dashboard channel — outbound tools Claude calls to push live progress to
- * the browser, plus the server-side allowlist that builds inbound `/sdd:` lines.
+ * the browser, plus the server-side allowlist that builds inbound `/sdd-emb:` lines.
  *
  * Re-skin of the Telegram channel: there, the "chat surface" is a Telegram chat;
  * here it is a browser tab. Claude replies OUTBOUND by calling these tools; the
- * server pushes INBOUND `/sdd:<skill> <slug>` commands via
+ * server pushes INBOUND `/sdd-emb:<skill> <slug>` commands via
  * notifications/claude/channel (built only from the allowlist below — never from
  * raw browser text).
  */
 
 // The skills the dashboard is allowed to drive. A POST /api/command is rejected
 // unless `command` is in this set — the inbound `content` is then built from
-// validated parts only, so a browser can never inject arbitrary `/sdd:` text.
+// validated parts only, so a browser can never inject arbitrary `/sdd-emb:` text.
 export const SKILL_NAMES = new Set([
   'survey',
   'specify',
@@ -42,7 +42,7 @@ export interface BuiltCommand {
 }
 
 /**
- * Build a literal `/sdd:<skill> <slug>` from validated parts. Throws on anything
+ * Build a literal `/sdd-emb:<skill> <slug>` from validated parts. Throws on anything
  * not in the allowlist — the single chokepoint that keeps browser input from
  * becoming an arbitrary slash command. `depth` defaults to easy for dashboard
  * runs (the skill self-decides reversible calls, asks far fewer questions).
@@ -66,7 +66,7 @@ export function buildCommand(
   if (!DEPTHS.has(depth)) throw new Error(`invalid depth: ${depth}`)
   // roadmap/survey are repo-wide — they still take the slug as a hint argument,
   // which the skills tolerate; keeping one shape simple beats special-casing.
-  const content = `/sdd:${skill} ${s} --depth=${depth}`
+  const content = `/sdd-emb:${skill} ${s} --depth=${depth}`
   return { content, skill, slug: s }
 }
 
@@ -214,7 +214,7 @@ export const DASHBOARD_TOOLS: ToolDef[] = [
         summary: { type: 'string', description: 'what this stage did (the handoff "What I did")' },
         verdict: { type: 'string', enum: ['PASS', 'CHANGES REQUESTED'] },
         review_files: { type: 'array', items: { type: 'string' }, description: 'docs/features/<slug>/… paths to review' },
-        next_command: { type: 'string', description: 'the next /sdd:<skill> <slug> line' },
+        next_command: { type: 'string', description: 'the next /sdd-emb:<skill> <slug> line' },
       },
       required: ['slug', 'stage', 'summary'],
     },

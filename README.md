@@ -1,7 +1,9 @@
 # SDD — Spec-Driven Development for Claude Code
 
 A self-contained Claude Code plugin that carries a feature from a one-line idea to
-**reviewed, verified, shipped** code through **19 atomic, stack-agnostic skills** and a
+**reviewed, verified, shipped** code through **23 atomic, stack-agnostic skills** (19 in the
+core spec-to-ship pipeline + 4 embroidery capability skills — `embroidery-digitize` →
+`embroidery-optimize` → `embroidery-export` → `embroidery-qa`) and a
 **TDD implementation engine** — with a living roadmap above the per-feature flow.
 
 Every skill is Socratic (it walks decisions with you, it doesn't dump a wall of output),
@@ -15,11 +17,11 @@ dial decides how much the skill decides for you vs. interrogates you with trade-
 **Claude Code** — native plugin:
 
 ```text
-/plugin marketplace add rdobryanskyy/sdd
-/plugin install sdd@sdd
+/plugin marketplace add rdobryanskyy/sdd-emb
+/plugin install sdd-emb@sdd-emb
 ```
 
-After updating to a new release: re-run `/plugin install sdd@sdd`, then `/reload-plugins`.
+After updating to a new release: re-run `/plugin install sdd-emb@sdd-emb`, then `/reload-plugins`.
 
 **Codex CLI** — `cd` into your project first: the script installs into the **current directory**
 (`.agents/skills/` + `.codex/agents/`). Add `--global` after `codex` to install under `~` instead,
@@ -27,26 +29,26 @@ or `--prefix DIR` to install under an arbitrary directory (useful for trying it 
 
 ```sh
 cd your-project
-curl -fsSL https://raw.githubusercontent.com/rdobryanskyy/sdd/main/install.sh | bash -s -- codex
+curl -fsSL https://raw.githubusercontent.com/rdobryanskyy/sdd-emb/main/install.sh | bash -s -- codex
 ```
 
-Then restart codex (skills are discovered at session start) and type `$sdd-specify`.
+Then restart codex (skills are discovered at session start) and type `$sdd-emb-specify`.
 
 Alternative — the plugin marketplace. Note that `add` only **registers** the marketplace, it
 installs nothing by itself:
 
 ```text
-codex plugin marketplace add rdobryanskyy/sdd
+codex plugin marketplace add rdobryanskyy/sdd-emb
 ```
 
-then **inside codex** run `/plugins`, switch to the `sdd` marketplace tab and pick
+then **inside codex** run `/plugins`, switch to the `sdd-emb` marketplace tab and pick
 **Install plugin**. One naming nuance: the marketplace install registers the **original** skill
-names (`$specify`), while the installer script prefixes them — `$sdd-specify` — because bare
+names (`$specify`), while the installer script prefixes them — `$sdd-emb-specify` — because bare
 names like `review` / `design` / `api` collide with generic skills. **Pick one of the two paths,
 not both** — they register different names for the same skills, so running both shows every
 skill twice. To undo the script install: re-run `install.sh codex --uninstall` from the same
 directory (or with the same `--global` / `--prefix`). To undo the marketplace install: `/plugins`
-→ the sdd tab → uninstall (or remove the `[plugins."sdd@…"]` entry from `~/.codex/config.toml`).
+→ the sdd-emb tab → uninstall (or remove the `[plugins."sdd-emb@…"]` entry from `~/.codex/config.toml`).
 The script warns when it detects a marketplace install already registered.
 
 > **Windows note.** The installer is a bash script — run it from Git Bash or WSL. The directories
@@ -59,11 +61,11 @@ The script warns when it detects a marketplace install already registered.
 
 ```sh
 cd your-project
-curl -fsSL https://raw.githubusercontent.com/rdobryanskyy/sdd/main/install.sh | bash -s -- cursor
+curl -fsSL https://raw.githubusercontent.com/rdobryanskyy/sdd-emb/main/install.sh | bash -s -- cursor
 ```
 
 Then restart Cursor (or run **Developer: Reload Window**) and invoke a stage by typing `/` in
-the chat and picking `sdd-specify`. (Cursor also reads `.agents/skills/`, so a Codex install is
+the chat and picking `sdd-emb-specify`. (Cursor also reads `.agents/skills/`, so a Codex install is
 already visible to Cursor.) Once the plugin is listed on the Cursor marketplace, installing from
 the in-app marketplace panel works too — project- or user-scoped.
 
@@ -77,9 +79,9 @@ The flow is a straight line: **each stage writes a file the next one reads.** Ru
 (the diagram + table are just below).
 
 ```text
-/sdd:survey                         ← once per repo: map an existing codebase, OR bootstrap an empty one
-/sdd:specify checkout-discounts     ← interviews you, writes the spec (you don't bring one)
-/sdd:design … → /sdd:implement … → /sdd:review … → /sdd:ship
+/sdd-emb:survey                         ← once per repo: map an existing codebase, OR bootstrap an empty one
+/sdd-emb:specify checkout-discounts     ← interviews you, writes the spec (you don't bring one)
+/sdd-emb:design … → /sdd-emb:implement … → /sdd-emb:review … → /sdd-emb:ship
 ```
 
 Two things to know up front: **`survey` runs once per repo** — on an existing codebase it maps the
@@ -92,7 +94,7 @@ refuses if it's missing, so you can't skip ahead by accident.
 
 **Every stage ends with a copy-ready handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md)):
 *What I did* + *Review before continuing* (links to the files it wrote, so you can eyeball them at the
-gate) + *Run next* — **`/clear`**, then the next `/sdd:…` command in a fenced block you copy in one
+gate) + *Run next* — **`/clear`**, then the next `/sdd-emb:…` command in a fenced block you copy in one
 click. The `/clear` matters because each stage is gated and **re-reads its inputs from disk**, so it
 needs no carryover — clearing keeps the context small and stops one stage's chatter from drifting into
 the next. (Loop-backs are the exception — when `review` bounces back to `implement`, you stay in
@@ -109,7 +111,7 @@ context to iterate; utilities make `/clear` optional.) It looks like this:
 
 **Run next**
 1. /clear — mandatory (fresh context; the next stage re-reads its inputs from disk)
-2. then run:  /sdd:clarify checkout-discounts
+2. then run:  /sdd-emb:clarify checkout-discounts
 ```
 
 ## The flow
@@ -175,7 +177,7 @@ end: a reviewed, verified change with a changelog and an open PR — merging to 
 
 ### Utilities — call whenever you need them (not part of the line)
 
-- **interview** *(before specify)* — stress-test a raw idea before you commit to a spec: a Socratic pass that surfaces hidden assumptions, names tradeoffs, and proposes sharper angles, ending with the weakest spot + the next step (usually `/sdd:specify`). Any idea, not just features; optional — reach for it when the idea itself isn't settled.
+- **interview** *(before specify)* — stress-test a raw idea before you commit to a spec: a Socratic pass that surfaces hidden assumptions, names tradeoffs, and proposes sharper angles, ending with the weakest spot + the next step (usually `/sdd-emb:specify`). Any idea, not just features; optional — reach for it when the idea itself isn't settled.
 - **classify-size** — size the feature XS/S/M/L/XL (writes `.size`); later skills read it to decide MVP vs full depth. Run it at the start, or any time scope changes.
 - **glossary** — capture a domain term in `CONTEXT.md` with a definition. Run it whenever a new term shows up; `design` and the spec read the glossary.
 - **decide-adr** — write a standalone ADR after the fact, when `tasks` (or a review) flags a decision that needs recording but wasn't captured during `design`.
@@ -198,7 +200,7 @@ the skill decides on its own vs. interrogates you. It changes *how many* questio
   suite** (competitive research, three strategic approaches, multi-perspective review,
   devil's-advocate), and probe edge cases harder.
 
-The default is `interview_depth` in `.claude/sdd.local.md` (else medium); override it per run, or
+The default is `interview_depth` in `.claude/sdd-emb.local.md` (else medium); override it per run, or
 pass `--depth=easy|medium|hard`. Full semantics: [`skills/_shared/interview-depth.md`](./skills/_shared/interview-depth.md).
 
 Two things the dial **never** weakens — they hold at every level:
@@ -337,7 +339,7 @@ The nine agents (`agents/`): **explorer** (brownfield scan), **test-author** (fa
 emit only cited findings. The last three are the **ideation analyses**, dispatched by `specify` and
 gated by the depth dial (easy skips them; hard runs the full suite).
 
-Two policy levers sit on top of the table. **`judgment_model`** (`.claude/sdd.local.md`;
+Two policy levers sit on top of the table. **`judgment_model`** (`.claude/sdd-emb.local.md`;
 `opus | fable`) raises **all** judgment agents (`reviewer` / `critic` / `devils-advocate` /
 `strategist` / `analyst`) to the Mythos-tier model in one switch — `agents/*.md` keep their
 tier-alias defaults; a per-role `model_<role>` key still wins. And on **L/XL** features the
@@ -349,7 +351,7 @@ frontmatter > session`), the `.size` scaling, and the env-var fallback for the `
 some builds have — lives in one place: [`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md).
 Short version: if a run feels under-reasoned, set `CLAUDE_CODE_EFFORT_LEVEL`.
 
-### Configuration — `.claude/sdd.local.md`
+### Configuration — `.claude/sdd-emb.local.md`
 
 The pipeline **auto-creates** this per-project settings file (YAML frontmatter) with **documented
 defaults** the first time a skill needs it — normally `specify` at the start — and adds it to
@@ -402,30 +404,30 @@ the start (here `checkout-discounts`). It becomes the folder every artifact land
 so use the **same slug at every stage**.
 
 ```text
-/sdd:survey                             # once per repo: map the current architecture
-/sdd:specify       checkout-discounts   # interview → spec (reads the architecture map)
-/sdd:clarify       checkout-discounts
-/sdd:design        checkout-discounts
-/sdd:sequences     checkout-discounts
-/sdd:data-model    checkout-discounts
-/sdd:api           checkout-discounts
-/sdd:tasks         checkout-discounts
-/sdd:plan-tests    checkout-discounts
-/sdd:implement     checkout-discounts
-/sdd:review        checkout-discounts   # independent review of the whole change
-/sdd:ship          checkout-discounts   # verify it runs, changelog, PR
+/sdd-emb:survey                             # once per repo: map the current architecture
+/sdd-emb:specify       checkout-discounts   # interview → spec (reads the architecture map)
+/sdd-emb:clarify       checkout-discounts
+/sdd-emb:design        checkout-discounts
+/sdd-emb:sequences     checkout-discounts
+/sdd-emb:data-model    checkout-discounts
+/sdd-emb:api           checkout-discounts
+/sdd-emb:tasks         checkout-discounts
+/sdd-emb:plan-tests    checkout-discounts
+/sdd-emb:implement     checkout-discounts
+/sdd-emb:review        checkout-discounts   # independent review of the whole change
+/sdd-emb:ship          checkout-discounts   # verify it runs, changelog, PR
 ```
 
 > **`/clear` between stages** — each stage is gated, re-reads its inputs from disk, and ends by
-> printing the next `/sdd:…` command to copy (the handoff block). Loop-backs (`review` → `implement`)
+> printing the next `/sdd-emb:…` command to copy (the handoff block). Loop-backs (`review` → `implement`)
 > stay in context; utilities make `/clear` optional.
 
 Three notes on the first run:
 
 - **You don't need `classify-size` to start** — `specify` classifies the feature and writes
-  `.size` itself when it's absent. Run `/sdd:classify-size <slug>` only to size it *before*
+  `.size` itself when it's absent. Run `/sdd-emb:classify-size <slug>` only to size it *before*
   specifying, or to re-classify when scope changes.
-- **Skip the depth question** by passing the dial inline: `/sdd:specify checkout-discounts
+- **Skip the depth question** by passing the dial inline: `/sdd-emb:specify checkout-discounts
   --depth=easy` (also on `clarify` / `design`; values `easy|medium|hard` — see
   [Interview depth](#interview-depth-easy--medium--hard)).
 - Artifacts land in `docs/features/<slug>/`.
@@ -448,14 +450,14 @@ stages (`clarify`, `sequences`, `data-model`, `api`, `plan-tests`):
 Example — a config-toggle-sized feature (`quick` route) in one session:
 
 ```text
-/sdd:specify  rate-limit-bump --depth=easy   # size XS + route quick confirmed in one question →
+/sdd-emb:specify  rate-limit-bump --depth=easy   # size XS + route quick confirmed in one question →
                                              #   zero open questions → auto-skips clarify (says why)
-/sdd:design   rate-limit-bump                # one actor, no multi-step flow, no schema change →
+/sdd-emb:design   rate-limit-bump                # one actor, no multi-step flow, no schema change →
                                              #   auto-skips sequences + data-model → next: api or tasks
-/sdd:tasks    rate-limit-bump                # never skipped: implement consumes tasks.json
-/sdd:implement rate-limit-bump               # test plan lives inline in spec.md on quick
-/sdd:review   rate-limit-bump
-/sdd:ship     rate-limit-bump
+/sdd-emb:tasks    rate-limit-bump                # never skipped: implement consumes tasks.json
+/sdd-emb:implement rate-limit-bump               # test plan lives inline in spec.md on quick
+/sdd-emb:review   rate-limit-bump
+/sdd-emb:ship     rate-limit-bump
 ```
 
 The skip conditions (`clarify` — zero open questions; `sequences` — no multi-step flow;
@@ -463,7 +465,7 @@ The skip conditions (`clarify` — zero open questions; `sequences` — no multi
 are canonical in [`skills/_shared/size-matrix.md`](./skills/_shared/size-matrix.md) — they're
 **N/A conditions, not size defaults**: an XS feature *with* a migration still runs `data-model`,
 on every route. The route steers handoffs only, it never locks a door: re-run
-`/sdd:classify-size <slug>` to switch routes mid-flight, or just invoke a skipped stage directly —
+`/sdd-emb:classify-size <slug>` to switch routes mid-flight, or just invoke a skipped stage directly —
 it always runs.
 
 ### When a stage refuses
@@ -474,9 +476,32 @@ skipped. The ones you're most likely to meet:
 
 | Refusal | What it means | What to do |
 |---|---|---|
-| `design`: «run `specify` first» | there's no `spec.md` for this slug yet (or the slug is spelled differently) | run `/sdd:specify <slug>`; check the slug matches the folder under `docs/features/` |
-| `api`: «run `data-model` first» | the feature **changes the schema** but has no `data-model.md` — the contract can't be invented field-by-field. (No schema change → `api` doesn't refuse: it derives from the existing schema — the legal fast-lane skip) | run `/sdd:data-model <slug>` |
-| `tasks`: «no Accepted ADR» | `design` spawned no ADR (rare — usually a sign the SAD walk was cut short) | run `/sdd:decide-adr <slug>` for the key decision, or re-run `/sdd:design <slug>` |
+| `design`: «run `specify` first» | there's no `spec.md` for this slug yet (or the slug is spelled differently) | run `/sdd-emb:specify <slug>`; check the slug matches the folder under `docs/features/` |
+| `api`: «run `data-model` first» | the feature **changes the schema** but has no `data-model.md` — the contract can't be invented field-by-field. (No schema change → `api` doesn't refuse: it derives from the existing schema — the legal fast-lane skip) | run `/sdd-emb:data-model <slug>` |
+| `tasks`: «no Accepted ADR» | `design` spawned no ADR (rare — usually a sign the SAD walk was cut short) | run `/sdd-emb:decide-adr <slug>` for the key decision, or re-run `/sdd-emb:design <slug>` |
+
+## Embroidery capability skills
+
+Four standalone skills — **not** gated into the backbone above — that do the domain computation the
+19-skill pipeline itself never does: turning artwork into a stitch plan, reordering it for
+production efficiency, serializing it to a real machine file format, and validating it against
+domain quality rules before production. A product feature that ships one of these as a capability
+(e.g. an "auto-digitize" button) is still built through the ordinary `specify → design → … → ship`
+backbone; its `implement` step calls into these skills the way it would call into any library.
+
+```text
+/sdd-emb:embroidery-digitize logo-design    ← artwork/brief → a stitch plan (stitch type, underlay, density per region)
+/sdd-emb:embroidery-optimize logo-design    ← reorders the plan to cut jumps/trims/color changes
+/sdd-emb:embroidery-export logo-design dst  ← serializes to a real machine format, round-trip-verified
+/sdd-emb:embroidery-qa logo-design          ← cites findings against domain rules; PASS or ISSUES-FOUND
+```
+
+Domain reference material these skills read (never hard-coded into the skills themselves) lives in
+[`docs/domain/embroidery/`](./docs/domain/embroidery/): file formats, machine constraints, stitch
+vocabulary, and production knowledge — each fact cited, with `<!-- TBD: verify -->` markers on
+anything not independently confirmed. `embroidery-export` is the one skill that touches real
+tooling — it runs an actual open-source embroidery library (`pyembroidery` by default) rather than
+hand-computing file bytes, and refuses to call an export successful without round-tripping it.
 
 ## Repository layout
 
@@ -486,10 +511,10 @@ skipped. The ones you're most likely to meet:
 .cursor-plugin/   Cursor plugin manifest (skills/ + agents/ auto-discovered from the root)
 install.sh        Codex CLI / Cursor installer — copies the subtree, prefixes skill names, generates functional agents
 agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
-scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd: form, handoff block, single-source taxonomy, no _shared orphans)
+scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd-emb: form, handoff block, single-source taxonomy, no _shared orphans)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff / tool-adapters (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
-.mcp.json         declares the sdd-dashboard MCP server (auto-starts at session open; opt-in via dashboard_enabled)
+.mcp.json         declares the sdd-emb-dashboard MCP server (auto-starts at session open; opt-in via dashboard_enabled)
 server/           the dashboard MCP server (Bun + TypeScript): server.ts (MCP stdio + Bun.serve HTTP/WS), http.ts (routing + gating, testable), state.ts (disk→pipeline derivation), channel.ts (dashboard_* tools + command allowlist), paths.ts (docs/ scoping), frontmatter.ts (shared parser) + tests/ (bun test)
 dashboard/        the browser UI (vanilla JS, terminal-green, read-only): index.html + app.js + style.css + vendor/ (marked, mermaid — vendored, offline; mermaid lazy-loads)
 ```
@@ -513,7 +538,7 @@ Directions under consideration — not promises, no dates:
 
 The roadmap's *"MCP exposure — pipeline state served over MCP so external tools and dashboards can read
 where every feature stands"* has shipped — and gained a control surface. The plugin carries an
-**`sdd-dashboard` MCP server** (`server/`, Bun + TypeScript) that auto-starts with every Claude Code
+**`sdd-emb-dashboard` MCP server** (`server/`, Bun + TypeScript) that auto-starts with every Claude Code
 session (declared in `.mcp.json`) and, when enabled, serves a **local browser dashboard** (`dashboard/`)
 on `127.0.0.1`. It reads every feature off disk (`docs/features/<slug>/`), shows its pipeline as a
 per-step checklist — `done` / `skipped` / `pending` / `blocked` — and renders each artifact (markdown +
@@ -526,14 +551,14 @@ never opt in are unaffected — nothing binds, nothing opens.
 
 1. Install **[Bun](https://bun.sh)** (the server runtime — the same dependency the official Telegram
    plugin uses): `curl -fsSL https://bun.sh/install | bash` or `brew install bun`.
-2. Set `dashboard_enabled: true` in your project's `.claude/sdd.local.md`
+2. Set `dashboard_enabled: true` in your project's `.claude/sdd-emb.local.md`
    (see [Configuration](#configuration--claudesddlocalmd)).
-3. Run **`/sdd:start`** in your Claude Code session. The server is already running — it auto-started
+3. Run **`/sdd-emb:start`** in your Claude Code session. The server is already running — it auto-started
    with the session; this step just hands it your project directory, binds the port if needed, and
    prints the URL: `http://127.0.0.1:<port>/?session=<id>&token=<capability-token>`. Open that exact
    URL in a browser — the token in it authorises the session.
 
-A new session (or a server restart) mints a new token, so an old tab goes stale: re-run `/sdd:start`
+A new session (or a server restart) mints a new token, so an old tab goes stale: re-run `/sdd-emb:start`
 and open the fresh URL.
 
 ### How the panel updates
@@ -555,7 +580,7 @@ Three mechanisms, layered:
 The **▶ Run next stage** / per-stage **run** / **⚒ Fix** (appears on a CHANGES REQUESTED review) /
 **+ new** buttons drive your live session — with honest **asynchronous** semantics:
 
-- A click sends the request to the server, which builds a validated `/sdd:<skill> <slug>` command from
+- A click sends the request to the server, which builds a validated `/sdd-emb:<skill> <slug>` command from
   a strict server-side allowlist and **queues** it into your Claude session — over the same channel
   mechanism the official Telegram plugin uses (`notifications/claude/channel`).
 - The session consumes a queued command **only while idle at the prompt**. If Claude is mid-task, the
@@ -577,13 +602,13 @@ The **▶ Run next stage** / per-stage **run** / **⚒ Fix** (appears on a CHANG
 - It has no chat input, and a blocking `AskUserQuestion` in the **terminal** stays terminal-only —
   the panel's option cards exist precisely so dashboard-driven runs don't block there, but free text
   never travels from the browser into the session.
-- It doesn't survive a server restart — re-run `/sdd:start` for a fresh URL/token.
+- It doesn't survive a server restart — re-run `/sdd-emb:start` for a fresh URL/token.
 
 **Setup, config & troubleshooting:** [`server/README.md`](./server/README.md).
 
 **Security:** binds loopback only; the API is read-only and every read is realpath-contained to `docs/`
 with an extension allowlist; all routes require a per-session capability token; inbound commands are built
-**only** from a server-side skill + slug allowlist (browser text never becomes an arbitrary `/sdd:` command).
+**only** from a server-side skill + slug allowlist (browser text never becomes an arbitrary `/sdd-emb:` command).
 
 ## License
 

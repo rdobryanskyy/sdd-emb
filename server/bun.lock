@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "sdd-dashboard",
+      "name": "sdd-emb-dashboard",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.0.0",
       },

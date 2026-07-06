@@ -11,7 +11,7 @@ PASS requires ALL of:
    {XS, S, M, L, XL}. If `.route` was written, it is exactly one of {quick, standard, full}.
 4. The run's final message ends with a stage-handoff block: a "What I did" part, a
    "Review before continuing" part listing real `docs/features/rate-limit-bump/...` paths, and a
-   "Run next" part naming the next `/sdd:` command.
+   "Run next" part naming the next `/sdd-emb:` command.
 
 FAIL if spec.md is missing, a section is absent with no explicit N/A, an AC leaks implementation
 tokens, `.size` is malformed, or no handoff block was printed.

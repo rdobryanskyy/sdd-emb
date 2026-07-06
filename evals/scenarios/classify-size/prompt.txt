@@ -1,4 +1,4 @@
-/sdd:classify-size tiny-toggle
+/sdd-emb:classify-size tiny-toggle
 
 Headless eval run — there is NO interactive user; never call AskUserQuestion. Read
 docs/features/tiny-toggle/spec.md; the four size signals are obvious from it (a one-line

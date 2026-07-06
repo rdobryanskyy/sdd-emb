@@ -5,7 +5,7 @@
  *
  * The API is READ-ONLY over docs/ (features, artifacts, roadmap) plus exactly
  * two mutating routes, neither of which touches disk: POST /api/command relays
- * a server-built, allowlisted /sdd: line into the live session; POST
+ * a server-built, allowlisted /sdd-emb: line into the live session; POST
  * /api/answer relays the picked option of a pending dashboard_ask question
  * (option label text authored by Claude itself — never browser free text).
  */
@@ -45,7 +45,7 @@ export function json(body: unknown, status = 200): Response {
 }
 
 export function tokenOk(ctx: HttpCtx, url: URL, req: Request): boolean {
-  const t = url.searchParams.get('token') || req.headers.get('x-sdd-token') || ''
+  const t = url.searchParams.get('token') || req.headers.get('x-sdd-emb-token') || ''
   return t.length > 0 && t === ctx.token
 }
 
@@ -142,7 +142,7 @@ async function handleApi(ctx: HttpCtx, req: Request, url: URL, path: string): Pr
     return new Response(data, {
       headers: {
         'content-type': contentTypeFor(abs),
-        'x-sdd-mtime': String(Math.round(st.mtimeMs)),
+        'x-sdd-emb-mtime': String(Math.round(st.mtimeMs)),
         'cache-control': 'no-store',
       },
     })
@@ -159,7 +159,7 @@ async function handleApi(ctx: HttpCtx, req: Request, url: URL, path: string): Pr
     return json(detail)
   }
 
-  // POST /api/command  { slug, command, depth? }  → inbound /sdd: line.
+  // POST /api/command  { slug, command, depth? }  → inbound /sdd-emb: line.
   // The ONLY mutating route — and it mutates nothing on disk; it relays a
   // server-built allowlisted command into the session.
   if (path === '/api/command' && req.method === 'POST') {
@@ -172,7 +172,7 @@ async function handleApi(ctx: HttpCtx, req: Request, url: URL, path: string): Pr
     ctx.notify({
       content: built.content,
       meta: {
-        source: 'sdd-dashboard',
+        source: 'sdd-emb-dashboard',
         session_id: ctx.sessionId,
         slug: built.slug,
         stage: built.skill,
@@ -212,7 +212,7 @@ async function handleApi(ctx: HttpCtx, req: Request, url: URL, path: string): Pr
         `Dashboard answer to question ${ask.id}${where}: "${picked.label}" — ` +
         `continue the paused run with this decision.`,
       meta: {
-        source: 'sdd-dashboard',
+        source: 'sdd-emb-dashboard',
         session_id: ctx.sessionId,
         kind: 'answer',
         ask_id: ask.id,

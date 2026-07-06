@@ -49,6 +49,7 @@ client-side SPA, desktop app, mobile app, console/CLI app, serverless function/w
 | `cli` | A console / command-line application — commands, flags, exit codes. | Backend Lead |
 | `worker` | An event-consumer / scheduled job / serverless function — no request/response surface. | Backend Lead |
 | `library-sdk` | A library or SDK: the public signatures/types it exposes are the contract. | Lib owner |
+| `embedded-firmware` | Firmware running on the target device's own controller (e.g. an embroidery machine's motor/needle-timing controller) — real-time hardware I/O, no OS-level request/response surface. | Firmware/Embedded Lead |
 
 The list is **fixed but extensible** — a genuinely new surface (e.g. a voice/IVR or an embedded
 firmware target) extends the table here, in one place, not inside a consuming skill. Most features
@@ -92,6 +93,7 @@ Each consuming skill reads `target_surfaces` and includes only the rows its decl
 | `cli` | `contracts/cli.md` (commands/flags/exit-codes) | command flows | app · ports | unit · e2e (command) |
 | `worker` | `contracts/events.md` (no request/response) | async flows | domain · infra | unit · integration |
 | `library-sdk` | `contracts/public-api.md` (public signatures) | usage flows | domain · app | unit · contract |
+| `embedded-firmware` | none by default — only `contracts/firmware-interface.md` if the feature exposes a host-communication protocol (e.g. a USB/serial command set) | hardware-interaction flows, using the **existing** generic vocabulary (`<service>` ↔ `<external-system>` for the hardware peripheral — no new participant token needed) | domain · ports (existing layers cover control logic + the hardware boundary — no new layer needed) | (existing) unit · integration, where "integration" means against a simulator or bench rig; a dedicated hardware-in-the-loop tier is deferred until a real firmware feature needs one (no speculative build) |
 
 Read it as: a feature with `[backend-service, web-frontend]` produces the backend contract **and** a
 `ui` task layer, UI-driven sequence flows alongside the service flows, and the component /

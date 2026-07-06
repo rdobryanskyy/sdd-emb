@@ -51,7 +51,7 @@ a fixed number.)
       detect what the repo uses, or name it «whatever your repo already uses».
 - [ ] **Every skill ends with the handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md))
       as its final step.
-- [ ] **Invocation form is `/sdd:<name>`** — the namespaced form, never the hyphenated `/sdd-<name>`.
+- [ ] **Invocation form is `/sdd-emb:<name>`** — the namespaced form, never the hyphenated `/sdd-emb-<name>`.
 - [ ] **Relative links resolve.** A `[text](./path.md)` target is a real file. The one exception is a
       template-runtime path (`../spec.md`, `../sad.md`, `../contracts/…`, …) that resolves only inside
       a generated `docs/features/<slug>/` folder — those are allowlisted in the validator.
@@ -75,8 +75,8 @@ See [`evals/README.md`](./evals/README.md) for prerequisites and how to add a sc
    `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json` —
    the validator fails on any mismatch.
 2. `python3 scripts/validate_plugin.py` → exit 0; push to `main`; tag `vX.Y.Z`.
-3. Claude Code and Codex pick the release up straight from git (`/plugin install sdd@sdd` +
-   `/reload-plugins`; `codex plugin marketplace upgrade sdd`). The `install.sh` path always
+3. Claude Code and Codex pick the release up straight from git (`/plugin install sdd-emb@sdd-emb` +
+   `/reload-plugins`; `codex plugin marketplace upgrade sdd-emb`). The `install.sh` path always
    downloads `main` (or `--ref vX.Y.Z`). Only the Cursor **marketplace** listing goes through a
    review — see below.
 
@@ -85,7 +85,7 @@ See [`evals/README.md`](./evals/README.md) for prerequisites and how to add a sc
 Cursor plugins are distributed as public git repositories and **manually reviewed** — both the
 first listing and every subsequent update:
 
-1. **Pre-check locally.** Copy the repo to `~/.cursor/plugins/local/sdd`, restart Cursor (or run
+1. **Pre-check locally.** Copy the repo to `~/.cursor/plugins/local/sdd-emb`, restart Cursor (or run
    **Developer: Reload Window**), type `/` in the chat and confirm the skills appear.
 2. **The repo already satisfies the format.** `.cursor-plugin/plugin.json` is the manifest (only
    `name` is strictly required; we also ship displayName / version / description / author /

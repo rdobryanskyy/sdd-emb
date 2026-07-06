@@ -1,4 +1,4 @@
-/sdd:design webhook-retries --depth=hard
+/sdd-emb:design webhook-retries --depth=hard
 
 This command was typed by the user in their TERMINAL (headless print mode: the user reads your
 final message and replies in the next turn — there is no other surface they are watching).

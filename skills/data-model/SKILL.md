@@ -6,7 +6,7 @@ agents: [explorer]
 description: >
   Use to design the data model AND generate the actual forward + rollback migrations in one
   pass — shippable SQL, not a plan. Triggers on "data model for {slug}", "schema for {slug}",
-  "generate migrations for {slug}", "DB design + migration", "/sdd:data-model {slug}",
+  "generate migrations for {slug}", "DB design + migration", "/sdd-emb:data-model {slug}",
   "модель даних для {slug}", "схема для {slug}", "згенеруй міграції". Reads spec.md §5 +
   sad.md §5 building blocks + the §6 sequence diagrams, then writes docs/features/{slug}/data-model.md plus
   paired *.up.sql / *.down.sql migrations STAGED under docs/features/{slug}/migrations/ (NOT the
@@ -35,6 +35,7 @@ Backend Lead.
 - Optional: the sequence diagrams in `sad.md §6` — each `writes/reads <entity>` note is an index candidate (one index per query, justified).
 - (Expected) `sad.md` frontmatter `target_surfaces` — context for which containers persist what. **Absent or empty → warn** («surfaces undeclared — re-run `design`, or proceeding as `backend-service`») **and treat as `[backend-service]`** (→ [`../_shared/surfaces.md`](../_shared/surfaces.md)).
 - **Convention source:** `docs/architecture-map.md` §Migrations (from `survey`) + the `sad.md` persistence decisions (§4/§5/§8) + Accepted ADRs — the migration tool/naming + the DB approach are **derived from here**, not invented (the map also gives module layout, saving a re-scan). For **drift detection** specifically, `explorer` still reads the **actual domain layer** (the map gives layout; drift needs the real struct/field source). Stack-agnostic — no hard-coded path or language.
+- (Optional) `docs/domain/**/*.md` — domain-knowledge reference packs (e.g. physical/numeric limits a column should enforce as a `CHECK` constraint). Read if present and cite the source doc in the column's rationale; absent, or the fact is marked `<!-- TBD: verify -->` in the doc → confirm the bound with the user as usual — never silently trust an unverified number as a hard constraint.
 
 ## Conventions — detect and follow (stack-agnostic)
 
@@ -78,7 +79,7 @@ What it **does apply regardless of stack** — migration **safety**, not DB phil
 11. **Drift detection (always; `--drift-only` short-circuits here).** If the Explore subagent found a domain layer, map each field to a column and report `field-without-column` / `column-without-field` / `type-mismatch` / `nullability-mismatch`; auto-propose fix migrations under `_drift/` for the user to review.
 12. **Self-check (4 mandatory, stack-agnostic).** Naming matches the **repo's** convention; **down reversibility** (every CREATE has a DROP, every ADD COLUMN a DROP COLUMN, every CREATE INDEX a DROP INDEX); **FK indexes** (every `REFERENCES other(id)` has an index on the FK column); **convention adherence** (the schema follows the repo's detected conventions — flag any deliberate divergence in the report, never silently impose a house style). Any failure → fix or surface, never silent-commit.
 13. **Audit report** `docs/features/<slug>/_audit/data-model-<date>.md`: the **staged** migration files (their `docs/features/<slug>/migrations/<NN>_*` paths), the **promote-time convention hint** (e.g. «repo is sequential, next ≈ `000024` — `implement` assigns the real number at promotion»), convention deviations, drift findings, breaking-change decompositions, every `<!-- TBD -->`. State plainly: «migrations are staged — not yet in the live `migrations/` tree; `implement` promotes them». Next stage `api <slug>`.
-14. **Propose commit + handoff.** `data-model: <slug> (data-model.md + staged migrations)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`data-model.md`, staged `migrations/`) + *Run next* — **resolve the next stage per `.route`** (the Routes table in [`../_shared/size-matrix.md`](../_shared/size-matrix.md)): forward `/sdd:api <slug>`; `api`'s N/A condition = **no contract change** (no new/changed endpoint, event, or public signature), skip target `/sdd:tasks <slug>` (on `quick` — auto-skip with the reason + inverted `↳ or`; on `standard` — offer the `↳ or`; on `full` — no skip line).
+14. **Propose commit + handoff.** `data-model: <slug> (data-model.md + staged migrations)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`data-model.md`, staged `migrations/`) + *Run next* — **resolve the next stage per `.route`** (the Routes table in [`../_shared/size-matrix.md`](../_shared/size-matrix.md)): forward `/sdd-emb:api <slug>`; `api`'s N/A condition = **no contract change** (no new/changed endpoint, event, or public signature), skip target `/sdd-emb:tasks <slug>` (on `quick` — auto-skip with the reason + inverted `↳ or`; on `standard` — offer the `↳ or`; on `full` — no skip line).
 
 ## Definition of Done
 

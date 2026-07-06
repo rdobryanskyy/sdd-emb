@@ -1,4 +1,4 @@
-# Settings — `.claude/sdd.local.md` (step 2)
+# Settings — `.claude/sdd-emb.local.md` (step 2)
 
 The engine is configured per-project by a plugin-settings file with YAML frontmatter. On first run, **lazy-create** it with the defaults below and tell the user where it is; on later runs, read it.
 
@@ -8,13 +8,13 @@ The engine is configured per-project by a plugin-settings file with YAML frontma
 
 Created **automatically** the first time a skill needs it — normally `specify` at the start of the backbone (it ensures the file alongside establishing `.size`), or `implement` if you jump straight to it. **Idempotent:** if the file already exists it is read, never overwritten.
 
-1. If `.claude/sdd.local.md` is absent, write it with **the documented frontmatter below, followed by the «What each key does» section as the file's markdown body** — so the file is self-documenting: every key carries its default, its allowed values, and a plain explanation inline, with no need to open the plugin docs.
-2. **Patch `.gitignore`** (create it if absent) to include `.claude/*.local.md` and `.worktrees/` — these are per-developer and must not be committed. (The `.claude/*.local.md` glob already covers `sdd.local.md`; don't add a redundant explicit line.)
-3. Tell the user: «Wrote `.claude/sdd.local.md` with documented defaults — edit it to change how the pipeline behaves.»
+1. If `.claude/sdd-emb.local.md` is absent, write it with **the documented frontmatter below, followed by the «What each key does» section as the file's markdown body** — so the file is self-documenting: every key carries its default, its allowed values, and a plain explanation inline, with no need to open the plugin docs.
+2. **Patch `.gitignore`** (create it if absent) to include `.claude/*.local.md` and `.worktrees/` — these are per-developer and must not be committed. (The `.claude/*.local.md` glob already covers `sdd-emb.local.md`; don't add a redundant explicit line.)
+3. Tell the user: «Wrote `.claude/sdd-emb.local.md` with documented defaults — edit it to change how the pipeline behaves.»
 
 ## The documented frontmatter
 
-<!-- This block is written verbatim to the top of `.claude/sdd.local.md`; the «What each key does»
+<!-- This block is written verbatim to the top of `.claude/sdd-emb.local.md`; the «What each key does»
      section below becomes the file's body. Keep the inline comments — they list the allowed values. -->
 
 ```yaml
@@ -43,7 +43,7 @@ judgment_model: opus       # opus | fable — one switch for ALL judgment agents
 effort_test_author: medium    # per-role effort; raised to high on escalation
 effort_implementer: medium
 effort_reviewer: high
-dashboard_enabled: false   # true → opt into the SDD visual dashboard (the sdd-dashboard MCP server + browser UI); see skills/start
+dashboard_enabled: false   # true → opt into the SDD visual dashboard (the sdd-emb-dashboard MCP server + browser UI); see skills/start
 dashboard_port: 4178       # integer — loopback port the dashboard binds (scans upward if busy); read by the server
 ```
 
@@ -62,8 +62,8 @@ dashboard_port: 4178       # integer — loopback port the dashboard binds (scan
 - **`auto_commit`** — `per_task` (default), `per_phase`, or `off` (leave commits to the user).
 - **`branch_strategy`** — `feature`: ensure work is on a feature branch (create one if on the default branch); `current`: commit on the current branch.
 - **`cmd_*`** — explicit command overrides; non-empty values short-circuit detection (the escape hatch for unusual repos).
-- **`dashboard_enabled`** — `true | false` (default `false`). Opt into the **SDD visual dashboard**: the `sdd-dashboard` MCP server (auto-started from `.mcp.json`) binds a loopback HTTP+WS listener and serves the read-only browser UI that shows every feature's pipeline stage, renders its artifacts, and drives the pipeline by sending `/sdd:<skill> <slug>` commands back into the live session. When `false` (or absent), the server stays idle — the markdown skills are unaffected. Run `/sdd:start` after enabling. Needs **Bun** installed. (Not read by the `implement` engine — read by the dashboard server + the `start` skill.)
-- **`dashboard_port`** — integer (default `4178`). The loopback port the dashboard binds; if busy the server scans upward (`4178..4189`) and `/sdd:start` prints the actual port. Only `127.0.0.1` is ever bound; mutating routes require the per-session capability token issued by `/sdd:start`.
+- **`dashboard_enabled`** — `true | false` (default `false`). Opt into the **SDD visual dashboard**: the `sdd-emb-dashboard` MCP server (auto-started from `.mcp.json`) binds a loopback HTTP+WS listener and serves the read-only browser UI that shows every feature's pipeline stage, renders its artifacts, and drives the pipeline by sending `/sdd-emb:<skill> <slug>` commands back into the live session. When `false` (or absent), the server stays idle — the markdown skills are unaffected. Run `/sdd-emb:start` after enabling. Needs **Bun** installed. (Not read by the `implement` engine — read by the dashboard server + the `start` skill.)
+- **`dashboard_port`** — integer (default `4178`). The loopback port the dashboard binds; if busy the server scans upward (`4178..4189`) and `/sdd-emb:start` prints the actual port. Only `127.0.0.1` is ever bound; mutating routes require the per-session capability token issued by `/sdd-emb:start`.
 - **`model_*` / `effort_*`** — per-role model + effort for the three agents, applied when the engine spawns them (it overrides the agent's frontmatter default). Roster defaults + rationale → [`../../_shared/agent-roster.md`](../../_shared/agent-roster.md). Precedence: env var > this setting > agent frontmatter > session.
 - **`judgment_model`** — `opus | fable` (default `opus`). One switch for **all judgment agents** — `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` — so the judgment tier can be raised to `fable` (the Mythos-tier model) in one place, without touching `agents/*.md`. A per-role `model_<role>` key still wins for its role. Full precedence (highest wins): `env > invocation > model_<role> > judgment_model > frontmatter > session`. Execution agents (`test-author` / `implementer`) and `explorer` / `researcher` are unaffected.
   - **Env path:** the engine also exports `CLAUDE_CODE_EFFORT_LEVEL` / `CLAUDE_CODE_SUBAGENT_MODEL` for the dispatch when these keys are set — the reliable lever (see [`agent-roster.md`](../../_shared/agent-roster.md) for why frontmatter alone may not suffice).

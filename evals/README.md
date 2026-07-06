@@ -11,7 +11,7 @@ gates refuse, artifacts land in shape, handoffs are emitted.
 
 ## Prerequisites
 
-- `claude` CLI installed and logged in. The sdd plugin does **not** need to be installed —
+- `claude` CLI installed and logged in. The sdd-emb plugin does **not** need to be installed —
   `run.sh` loads it from this checkout via `--plugin-dir`, so the eval exercises the working
   tree, not an installed version.
 - `jq`, `git` on PATH.
@@ -45,21 +45,21 @@ Exit code is non-zero when any scenario's verdict is `FAIL` (or unparseable).
 
 | Scenario | What it proves |
 |---|---|
-| `specify-happy-path` | `/sdd:specify` produces a spec.md with §1–§8, business-observable ACs, `.size` + `.route`, and the handoff block |
-| `design-gate-refusal` | `/sdd:design` on a folder with `.size` but **no spec.md** refuses, points at `specify`, writes no sad.md/ADRs |
-| `classify-size` | `/sdd:classify-size` writes one-token `.size` + `.route` and hands off (utility variant) |
-| `api-fastlane-no-datamodel` | `/sdd:api` on a no-schema-change feature **without** data-model.md does not refuse — it derives the contract from the existing schema, names the legal skip + «existing schema» origins, and emits the handoff |
-| `api-schema-change-refusal` | `/sdd:api` on a feature **with** a schema change (staged migration + new sad §5 entity) and no data-model.md hard-refuses, names `data-model`, writes no contract and no self-served data-model.md |
-| `design-quick-commit-batching` | `/sdd:design` on route quick + depth easy writes all 12 SAD sections to disk but batches commits — ≤4 after the baseline (bootstrap + ≤3 batches), not per-section |
-| `tasks-compile-coupled-lane` | `/sdd:tasks` on a Go feature extending a shared interface emits no standalone interface-only task — it folds the contract change or marks the compile-coupled pair via a shared `files_hint` |
-| `terminal-run-no-dashboard-ask` | a TERMINAL `/sdd:design --depth=hard` run with the dashboard MCP (and its `dashboard_ask` tool) in context keeps its questions in the terminal — asks in the final message or self-decides; never routes the decision to the dashboard/panel |
+| `specify-happy-path` | `/sdd-emb:specify` produces a spec.md with §1–§8, business-observable ACs, `.size` + `.route`, and the handoff block |
+| `design-gate-refusal` | `/sdd-emb:design` on a folder with `.size` but **no spec.md** refuses, points at `specify`, writes no sad.md/ADRs |
+| `classify-size` | `/sdd-emb:classify-size` writes one-token `.size` + `.route` and hands off (utility variant) |
+| `api-fastlane-no-datamodel` | `/sdd-emb:api` on a no-schema-change feature **without** data-model.md does not refuse — it derives the contract from the existing schema, names the legal skip + «existing schema» origins, and emits the handoff |
+| `api-schema-change-refusal` | `/sdd-emb:api` on a feature **with** a schema change (staged migration + new sad §5 entity) and no data-model.md hard-refuses, names `data-model`, writes no contract and no self-served data-model.md |
+| `design-quick-commit-batching` | `/sdd-emb:design` on route quick + depth easy writes all 12 SAD sections to disk but batches commits — ≤4 after the baseline (bootstrap + ≤3 batches), not per-section |
+| `tasks-compile-coupled-lane` | `/sdd-emb:tasks` on a Go feature extending a shared interface emits no standalone interface-only task — it folds the contract change or marks the compile-coupled pair via a shared `files_hint` |
+| `terminal-run-no-dashboard-ask` | a TERMINAL `/sdd-emb:design --depth=hard` run with the dashboard MCP (and its `dashboard_ask` tool) in context keeps its questions in the terminal — asks in the final message or self-decides; never routes the decision to the dashboard/panel |
 
 ## Adding a scenario
 
 Create `scenarios/<name>/` with three parts:
 
 - `fixture/` — the starting repo tree (committed as the git baseline; keep it minimal).
-- `prompt.txt` — the exact `-p` prompt: the `/sdd:` command line plus the headless framing
+- `prompt.txt` — the exact `-p` prompt: the `/sdd-emb:` command line plus the headless framing
   (state the idea/answers inline; always `--depth=easy`).
 - `rubric.md` — numbered PASS conditions the judge can verify from the diff/tree/final message
   only. Make every item observable; «the model tried» is not a rubric item.

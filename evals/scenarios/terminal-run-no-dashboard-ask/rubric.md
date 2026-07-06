@@ -1,6 +1,6 @@
 # Rubric — a terminal run must never route its questions through the dashboard
 
-Regression guard for the `dashboard_ask` feature (v1.15.0). The sdd-dashboard MCP server is
+Regression guard for the `dashboard_ask` feature (v1.15.0). The sdd-emb-dashboard MCP server is
 loaded in eval runs, so the `dashboard_ask` tool and the dashboard instructions are in the
 model's context. But this run was launched from the TERMINAL — no dashboard command ping
 anywhere — and the MCP instructions reserve `dashboard_ask` for DASHBOARD-DRIVEN runs only

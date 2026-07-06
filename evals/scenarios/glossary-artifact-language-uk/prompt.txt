@@ -1,4 +1,4 @@
-/sdd:glossary rate-limit-bump
+/sdd-emb:glossary rate-limit-bump
 
 Headless eval run — there is NO interactive user; never call AskUserQuestion. Capture BOTH domain
 terms below into the feature-scoped glossary for slug rate-limit-bump. Treat the definitions and
@@ -10,6 +10,6 @@ NOT-references given here as the user's already-confirmed answers:
 2. term "burst credit" — definition: a one-off allowance that lets a tenant briefly exceed its
    quota-window limit without being throttled. NOT-reference: none.
 
-The project's per-project settings live at .claude/sdd.local.md — read them before writing.
+The project's per-project settings live at .claude/sdd-emb.local.md — read them before writing.
 Follow the skill's protocol exactly (including the template bootstrap). Write the files and
 finish by printing the stage-handoff block.

@@ -6,7 +6,7 @@ agents: [test-author, implementer, reviewer]
 description: >
   Use to implement a feature from its tasks.json with test-driven development — writes a failing
   test first, makes it pass, refactors, gates, and commits per task. Triggers on "implement {slug}",
-  "build {slug}", "TDD {slug}", "code up the tasks for {slug}", "/sdd:implement {slug}",
+  "build {slug}", "TDD {slug}", "code up the tasks for {slug}", "/sdd-emb:implement {slug}",
   "імплементуй {slug}", "реалізуй фічу {slug}", "напиши код за задачами". Reads
   docs/features/{slug}/tasks.json + the upstream artifacts, detects the repo's test/lint/vet
   commands stack-agnostically, builds a dependency DAG, and runs one of three modes — sequential
@@ -29,12 +29,12 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 - `<slug>` — feature slug.
 - **Gate (hard refuse):** `docs/features/<slug>/tasks.json`. Missing → «run `tasks <slug>` first».
 - Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + the **staged** migrations under `docs/features/<slug>/migrations/` (a `layer: migration` task **promotes** these into the live `migrations/` tree — see [`./references/inputs.md`](./references/inputs.md)), `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
-- Settings: `.claude/sdd.local.md` (auto-created with documented defaults if absent — normally by `specify` at the backbone start; `implement` creates it too if you jump straight here) → [`./references/settings.md`](./references/settings.md).
+- Settings: `.claude/sdd-emb.local.md` (auto-created with documented defaults if absent — normally by `specify` at the backbone start; `implement` creates it too if you jump straight here) → [`./references/settings.md`](./references/settings.md).
 
 ## Protocol
 
 1. **Preconditions.** Verify `tasks.json` exists and parses; load the upstream artifacts list. Detail → [`./references/inputs.md`](./references/inputs.md).
-2. **Settings.** Read `.claude/sdd.local.md`; if absent, auto-create it with the documented defaults (frontmatter + the «What each key does» body, self-documenting) and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`) — the same template `specify` writes. → [`./references/settings.md`](./references/settings.md).
+2. **Settings.** Read `.claude/sdd-emb.local.md`; if absent, auto-create it with the documented defaults (frontmatter + the «What each key does» body, self-documenting) and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`) — the same template `specify` writes. → [`./references/settings.md`](./references/settings.md).
 3. **Detect commands.** Run the stack-agnostic cascade (settings override → Makefile → package scripts → language manifests → Docker probe for the integration tier) to resolve unit / integration / lint / vet commands. Print what was detected. → [`./references/command-detection.md`](./references/command-detection.md).
 4. **Build the DAG.** Parse `tasks.json`, validate `deps` is acyclic, topologically sort into phases (Kahn). Compute `task_count`, `longest_chain`, `parallel_width`. Mark serialization lanes (`layer: migration`; tasks with overlapping `files_hint`).
 5. **Pick the mode.** Run the decision tree (below; full form → [`./references/decision-tree.md`](./references/decision-tree.md)). Apply the guards.
@@ -42,7 +42,7 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>`. The user sees exactly how the engine will behave before it acts.
 8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md). A `layer: migration` task first **promotes** its staged migration(s) (`docs/features/<slug>/migrations/<NN>_*`) into the live `migrations/` tree — assigning the real sequence number / timestamp per the repo's convention, in ordinal order — *then* applies + reverts them; detail → [`./references/inputs.md`](./references/inputs.md).
 9. **Per-task gate + commit.** After GREEN+REFACTOR: unit + (integration if available) + lint + vet must be clean, then commit task-scoped with trailers `SDD-Task: <id>` and `SDD-AC: <id>` (one per satisfied AC). Tasks in one **compile-coupled lane** (shared contract file in `files_hint`) pass one shared gate and one commit carrying every task's trailers — the sanctioned exception in [`./references/tdd-loop.md`](./references/tdd-loop.md) §COMMIT. Update `tracker.md` → `done`.
-10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (covered AC, commits with `SDD-Task` trailers, gate results) + *Review* (the committed diff + `tasks/tracker.md`) + *Run next* (`/clear`, then `/sdd:review <slug>` — a clean-context pass over the whole diff), then `/sdd:ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
+10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (covered AC, commits with `SDD-Task` trailers, gate results) + *Review* (the committed diff + `tasks/tracker.md`) + *Run next* (`/clear`, then `/sdd-emb:review <slug>` — a clean-context pass over the whole diff), then `/sdd-emb:ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
 
 ## Decision tree (compact)
 

@@ -24,16 +24,16 @@ Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspe
 
 ## Dispatching (`subagent_type`)
 
-These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdd:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdd-…` prefix:
+These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdd-emb:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdd-emb-…` prefix:
 
-`sdd:explorer` · `sdd:test-author` · `sdd:implementer` · `sdd:reviewer` · `sdd:critic` · `sdd:devils-advocate` · `sdd:researcher` · `sdd:strategist` · `sdd:analyst`
+`sdd-emb:explorer` · `sdd-emb:test-author` · `sdd-emb:implementer` · `sdd-emb:reviewer` · `sdd-emb:critic` · `sdd-emb:devils-advocate` · `sdd-emb:researcher` · `sdd-emb:strategist` · `sdd-emb:analyst`
 
-So when a skill says «dispatch the `explorer` agent», the call is `subagent_type: "sdd:explorer"`. If the namespaced agent isn't available at runtime, fall back to the general-purpose (or `Explore`) agent the skill names, passing the same prompt. A fallback agent never reads `agents/*.md` — everything it must know arrives in the prompt, **including the async report-delivery instruction** (shared-contract point 2 below) when the host runs it in background/teammate mode.
+So when a skill says «dispatch the `explorer` agent», the call is `subagent_type: "sdd-emb:explorer"`. If the namespaced agent isn't available at runtime, fall back to the general-purpose (or `Explore`) agent the skill names, passing the same prompt. A fallback agent never reads `agents/*.md` — everything it must know arrives in the prompt, **including the async report-delivery instruction** (shared-contract point 2 below) when the host runs it in background/teammate mode.
 
 ### Cross-tool dispatch
 
-The `subagent_type: "sdd:<name>"` form is **Claude Code-only** — it's the id the plugin loader
-registers. Under **Codex CLI / Cursor** the installer generates a custom agent named `sdd-<name>`
+The `subagent_type: "sdd-emb:<name>"` form is **Claude Code-only** — it's the id the plugin loader
+registers. Under **Codex CLI / Cursor** the installer generates a custom agent named `sdd-emb-<name>`
 (into `.codex/agents/` / `.cursor/agents/`); dispatch that, or — when the host has no agent
 mechanism in reach — run the agent file's instructions **inline** in the current context. Same
 degrade-don't-block rule and the full mapping table: [`tool-adapters.md`](./tool-adapters.md).
@@ -44,7 +44,7 @@ degrade-don't-block rule and the full mapping table: [`tool-adapters.md`](./tool
 env var  >  per-invocation (the Agent call)  >  model_<role>  >  judgment_model  >  frontmatter  >  session
 ```
 
-**`judgment_model`** (`.claude/sdd.local.md`; `opus | fable`, default `opus`) is the one-switch
+**`judgment_model`** (`.claude/sdd-emb.local.md`; `opus | fable`, default `opus`) is the one-switch
 tier for the **judgment agents** — `reviewer` / `critic` / `devils-advocate` / `strategist` /
 `analyst`. Setting it to `fable` raises all five to the Mythos-tier model without touching
 `agents/*.md` (their frontmatter stays the tier-alias default); a per-role `model_<role>` key
@@ -55,7 +55,7 @@ gathering (`explorer` / `researcher`) roles. See the settings doc:
 - **`model`** env: `CLAUDE_CODE_SUBAGENT_MODEL`. Values: `haiku|sonnet|opus|inherit|<full-model-id>`.
 - **`effort`** env: `CLAUDE_CODE_EFFORT_LEVEL`. Values: `low|medium|high|xhigh|max|<number>` (`xhigh`/`max` only on Opus 4.8 / 4.7).
 - The `CLAUDE_CODE_*` env vars are **Claude Code-only** levers — Codex CLI / Cursor ignore them; pick the model in the host's own settings there.
-- Per-project overrides live in `.claude/sdd.local.md` as `model_<role>` / `effort_<role>` keys (see the implement settings).
+- Per-project overrides live in `.claude/sdd-emb.local.md` as `model_<role>` / `effort_<role>` keys (see the implement settings).
 
 > **Caveat (verify on your build).** Some Claude Code builds have reported the `effort:` *frontmatter*
 > having no observable runtime effect (GitHub claude-code#43083). The field is documented and we set

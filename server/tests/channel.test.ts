@@ -13,10 +13,10 @@ import {
 } from '../channel.ts'
 
 describe('buildCommand allowlist', () => {
-  it('builds a literal /sdd: line from validated parts, depth defaults to easy', () => {
+  it('builds a literal /sdd-emb: line from validated parts, depth defaults to easy', () => {
     const b = buildCommand('specify', 'my-feature')
     expect(b).toEqual({
-      content: '/sdd:specify my-feature --depth=easy',
+      content: '/sdd-emb:specify my-feature --depth=easy',
       skill: 'specify',
       slug: 'my-feature',
     })
@@ -24,7 +24,7 @@ describe('buildCommand allowlist', () => {
 
   it('honours an explicit depth', () => {
     expect(buildCommand('design', 'x', { depth: 'hard' }).content).toBe(
-      '/sdd:design x --depth=hard',
+      '/sdd-emb:design x --depth=hard',
     )
   })
 

@@ -1,6 +1,6 @@
 /* SDD dashboard — vanilla JS, READ-ONLY over docs/features/. It renders the
    pipeline + artifacts off disk and drives the pipeline back into the live
-   Claude session (validated /sdd: commands). All edits happen through the
+   Claude session (validated /sdd-emb: commands). All edits happen through the
    pipeline in the terminal — the dashboard never writes artifact text. */
 'use strict';
 
@@ -26,7 +26,7 @@ function withToken(path) {
 async function api(path, opts = {}) {
   const res = await fetch(withToken(path), {
     ...opts,
-    headers: { 'content-type': 'application/json', 'x-sdd-token': TOKEN, ...(opts.headers || {}) },
+    headers: { 'content-type': 'application/json', 'x-sdd-emb-token': TOKEN, ...(opts.headers || {}) },
   });
   return res;
 }
@@ -424,7 +424,7 @@ async function openArtifact(a) {
     const res = await api(`/api/artifact?slug=${encodeURIComponent(state.slug)}&path=${encodeURIComponent(a.path)}`);
     if (!res.ok) throw new Error(res.status);
     const raw = await res.text();
-    const mtime = Number(res.headers.get('x-sdd-mtime') || 0);
+    const mtime = Number(res.headers.get('x-sdd-emb-mtime') || 0);
     state.artifact = { path: a.path, kind: a.kind, label: a.label, raw, mtime };
     renderArtifactTabs(state.detail);
     renderArtifact();
@@ -568,7 +568,7 @@ function newFeatureDialog() {
   const wrap = document.createElement('div');
   const hint = document.createElement('div');
   hint.className = 'modal-hint';
-  hint.textContent = 'Runs /sdd:specify <slug> in the session (depth from the topbar selector). Slug must be kebab-case.';
+  hint.textContent = 'Runs /sdd-emb:specify <slug> in the session (depth from the topbar selector). Slug must be kebab-case.';
   const input = document.createElement('input');
   input.placeholder = 'feature-slug';
   input.autofocus = true;
@@ -625,8 +625,8 @@ async function showRoadmap() {
       b.onclick = () => { closeModal(); runCommand(skill, skill); };
       return b;
     };
-    actions.appendChild(runBtn('↻ run /sdd:roadmap', 'roadmap', 'Regenerate docs/roadmap.md from the features on disk'));
-    actions.appendChild(runBtn('run /sdd:survey', 'survey', 'Survey the repo and refresh docs/architecture-map.md'));
+    actions.appendChild(runBtn('↻ run /sdd-emb:roadmap', 'roadmap', 'Regenerate docs/roadmap.md from the features on disk'));
+    actions.appendChild(runBtn('run /sdd-emb:survey', 'survey', 'Survey the repo and refresh docs/architecture-map.md'));
     const close = document.createElement('button');
     close.className = 'ghost small';
     close.textContent = 'close';
@@ -667,7 +667,7 @@ function init() {
 
   if (!TOKEN) {
     setConn(false, 'no token in URL');
-    logLine('error', 'No capability token in the URL. Open the link printed by /sdd:start.');
+    logLine('error', 'No capability token in the URL. Open the link printed by /sdd-emb:start.');
     return;
   }
   setConn(false, 'connecting…');

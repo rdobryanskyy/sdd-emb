@@ -1,17 +1,17 @@
 {
-  "name": "sdd",
+  "name": "sdd-emb",
   "version": "1.16.0",
-  "description": "Spec-Driven Development for Claude Code: 19 atomic, stack-agnostic skills + 9 subagents that carry a feature from idea → spec → design → data-model → API → tasks → tests → implement → review → ship, plus a TDD implementation engine and a living roadmap above the per-feature flow. Start with `survey` (maps an existing codebase or bootstraps an empty one), walk the gated backbone — each stage reads the previous artifact and hard-refuses if missing — and keep `docs/roadmap.md` (Now/Next/Later, outcome-altitude, never dates) in sync as `specify` promotes a feature to Now and `ship` moves it to Shipped. The Q&A skills are depth-tunable (easy/medium/hard — decide-for-me vs. interrogate-me-with-trade-offs); the ideation analyses run as named subagents (researcher/strategist/analyst/devil's-advocate) gated by that dial; diagrams are presented in prose and written to file (never raw Mermaid dumped to the terminal); and every acceptance criterion is covered end-to-end. design is surface-aware: it declares the feature's target surfaces at the architecture stage (backend-service / web-frontend / mobile-app / desktop-app / cli / worker / library-sdk, each a C4 container) and downstream stages gate their output by that choice — the `ui` task layer, UI-driven sequence flows, and the component / visual-regression / e2e-through-UI frontend test tiers; `ui` work reuses the repo's existing design system (components / tokens / styling) from the architecture map, never reinvents. Every stage ends with a copy-ready handoff block — what changed, the files to review, then `/clear` + the next `/sdd:…` command.",
+  "description": "Spec-Driven Development for Claude Code, specialized for industrial embroidery software: 23 atomic, stack-agnostic skills + 9 subagents — 19 in the core idea → spec → design → data-model → API → tasks → tests → implement → review → ship pipeline, plus a 4-skill embroidery capability module (embroidery-digitize → embroidery-optimize → embroidery-export → embroidery-qa) — plus a TDD implementation engine and a living roadmap above the per-feature flow. Start with `survey` (maps an existing codebase or bootstraps an empty one), walk the gated backbone — each stage reads the previous artifact and hard-refuses if missing — and keep `docs/roadmap.md` (Now/Next/Later, outcome-altitude, never dates) in sync as `specify` promotes a feature to Now and `ship` moves it to Shipped. The Q&A skills are depth-tunable (easy/medium/hard — decide-for-me vs. interrogate-me-with-trade-offs); the ideation analyses run as named subagents (researcher/strategist/analyst/devil's-advocate) gated by that dial; diagrams are presented in prose and written to file (never raw Mermaid dumped to the terminal); and every acceptance criterion is covered end-to-end. design is surface-aware: it declares the feature's target surfaces at the architecture stage (backend-service / web-frontend / mobile-app / desktop-app / cli / worker / library-sdk / embedded-firmware, each a C4 container) and downstream stages gate their output by that choice — the `ui` task layer, UI-driven sequence flows, and the component / visual-regression / e2e-through-UI frontend test tiers; `ui` work reuses the repo's existing design system (components / tokens / styling) from the architecture map, never reinvents. Every stage ends with a copy-ready handoff block — what changed, the files to review, then `/clear` + the next `/sdd-emb:…` command.",
   "author": {
     "name": "Rostyslav Dobryanskyy",
     "email": "r.dobryanskyy@outlook.com",
     "url": "https://github.com/rdobryanskyy"
   },
   "license": "MIT",
-  "homepage": "https://github.com/rdobryanskyy/sdd",
-  "repository": "https://github.com/rdobryanskyy/sdd.git",
+  "homepage": "https://github.com/rdobryanskyy/sdd-emb",
+  "repository": "https://github.com/rdobryanskyy/sdd-emb.git",
   "keywords": [
-    "sdd",
+    "sdd-emb",
     "spec-driven-development",
     "claude-code",
     "prd",

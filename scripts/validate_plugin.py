@@ -78,7 +78,7 @@ def main() -> int:
     name = plugin.get("name", "")
     version = plugin.get("version", "")
     desc = plugin.get("description", "")
-    check(name == "sdd", "plugin name is 'sdd'", f"plugin name is {name!r}, expected 'sdd'")
+    check(name == "sdd-emb", "plugin name is 'sdd-emb'", f"plugin name is {name!r}, expected 'sdd-emb'")
     check(bool(SEMVER.match(version)), f"plugin version {version!r} is semver", f"plugin version {version!r} is not semver X.Y.Z")
     check(len(desc) >= 50, f"plugin description present ({len(desc)} chars)", f"plugin description too short ({len(desc)} chars)")
     check(bool(plugin.get("license")), "plugin declares a license", "plugin.json has no license")
@@ -99,13 +99,13 @@ def main() -> int:
     # --- marketplace.json: agrees with plugin.json on name / version / description ---
     print("== marketplace ==")
     plugins = market.get("plugins", [])
-    entry = next((p for p in plugins if p.get("name") == "sdd"), None)
-    if check(entry is not None, "marketplace lists the 'sdd' plugin", "marketplace.json has no plugin named 'sdd'"):
+    entry = next((p for p in plugins if p.get("name") == "sdd-emb"), None)
+    if check(entry is not None, "marketplace lists the 'sdd-emb' plugin", "marketplace.json has no plugin named 'sdd-emb'"):
         check(entry.get("version") == version,
               f"marketplace version matches plugin.json ({version})",
               f"marketplace version {entry.get('version')!r} != plugin.json {version!r}")
-        check(bool(entry.get("description")), "marketplace entry has a description", "marketplace 'sdd' entry has no description")
-        check(bool(entry.get("source")), "marketplace entry has a source", "marketplace 'sdd' entry has no source")
+        check(bool(entry.get("description")), "marketplace entry has a description", "marketplace 'sdd-emb' entry has no description")
+        check(bool(entry.get("source")), "marketplace entry has a source", "marketplace 'sdd-emb' entry has no source")
 
     # --- cross-tool manifests: the Codex + Cursor mirrors carry the same name + version ---
     # v1.9.0 ships .codex-plugin/ + .agents/plugins/ (Codex CLI) and .cursor-plugin/ (Cursor);
@@ -126,21 +126,21 @@ def main() -> int:
         data = load_tool_manifest(rel)
         if data is None:
             continue
-        check(data.get("name") == "sdd", f"{rel} name is 'sdd'",
-              f"{rel} name is {data.get('name')!r}, expected 'sdd'")
+        check(data.get("name") == "sdd-emb", f"{rel} name is 'sdd-emb'",
+              f"{rel} name is {data.get('name')!r}, expected 'sdd-emb'")
         check(data.get("version") == version,
               f"{rel} version matches plugin.json ({version})",
               f"{rel} version {data.get('version')!r} != plugin.json {version!r}")
 
     codex_market = load_tool_manifest(".agents/plugins/marketplace.json")
     if codex_market is not None:
-        check(codex_market.get("name") == "sdd",
-              ".agents marketplace name is 'sdd'",
-              f".agents marketplace name is {codex_market.get('name')!r}, expected 'sdd'")
-        cm_entry = next((p for p in codex_market.get("plugins", []) if p.get("name") == "sdd"), None)
+        check(codex_market.get("name") == "sdd-emb",
+              ".agents marketplace name is 'sdd-emb'",
+              f".agents marketplace name is {codex_market.get('name')!r}, expected 'sdd-emb'")
+        cm_entry = next((p for p in codex_market.get("plugins", []) if p.get("name") == "sdd-emb"), None)
         check(cm_entry is not None and bool(cm_entry.get("source")),
-              ".agents marketplace lists the 'sdd' plugin with a source",
-              ".agents/plugins/marketplace.json has no 'sdd' plugin entry with a source")
+              ".agents marketplace lists the 'sdd-emb' plugin with a source",
+              ".agents/plugins/marketplace.json has no 'sdd-emb' plugin entry with a source")
         # Codex CANNOT install a plugin whose local path is the marketplace root: it strips `./`
         # and rejects the empty remainder (codex-rs marketplace.rs, resolve_local_plugin_source_path)
         # — the entry is silently skipped and the marketplace lists zero plugins. The self-marketplace
@@ -148,8 +148,8 @@ def main() -> int:
         cm_src = (cm_entry or {}).get("source")
         check(isinstance(cm_src, dict) and cm_src.get("source") == "url"
               and str(cm_src.get("url", "")).startswith("https://github.com/"),
-              ".agents marketplace 'sdd' source is the git url form (root-local './' is uninstallable in codex)",
-              f".agents marketplace 'sdd' source must be {{'source': 'url', 'url': 'https://github.com/…'}} — "
+              ".agents marketplace 'sdd-emb' source is the git url form (root-local './' is uninstallable in codex)",
+              f".agents marketplace 'sdd-emb' source must be {{'source': 'url', 'url': 'https://github.com/…'}} — "
               f"codex silently skips a root-local './' plugin; got {cm_src!r}")
 
     installer = ROOT / "install.sh"
@@ -271,14 +271,14 @@ def main() -> int:
           "broken relative links (real *.md/dir target missing, not template-runtime):\n        "
           + "\n        ".join(broken))
 
-    # --- invocation form: the namespaced /sdd:<name>, never the hyphenated /sdd-<name> ---
-    # The plugin ships skills (no commands/ dir), so Claude Code invokes them /sdd:<name>. The only
-    # legit /sdd- in the tree is the proof-run branch ref proof/sdd-notification-preferences and the
-    # `sdd-dashboard` MCP server / `~/.claude/sdd-dashboard/` state dir (a server name, not an
+    # --- invocation form: the namespaced /sdd-emb:<name>, never the hyphenated /sdd-emb-<name> ---
+    # The plugin ships skills (no commands/ dir), so Claude Code invokes them /sdd-emb:<name>. The only
+    # legit /sdd-emb- in the tree is the proof-run branch ref proof/sdd-emb-notification-preferences and the
+    # `sdd-emb-dashboard` MCP server / `~/.claude/sdd-emb-dashboard/` state dir (a server name, not an
     # invocation). We scan docs + the manifests (the v1.8.4 sweep missed plugin.json's description —
     # that gap stays closed).
     print("== invocation form ==")
-    SDD_HYPHEN = re.compile(r"(?<!proof)/sdd-(?!dashboard)")
+    SDD_HYPHEN = re.compile(r"(?<!proof)/sdd-emb-(?!dashboard)")
     form_files = link_files + [ROOT / ".claude-plugin" / "plugin.json", ROOT / ".claude-plugin" / "marketplace.json"]
     offenders: list[str] = []
     for f in sorted(set(form_files)):
@@ -286,8 +286,8 @@ def main() -> int:
             if SDD_HYPHEN.search(line):
                 offenders.append(f"{f.relative_to(ROOT)}:{i}")
     check(not offenders,
-          "invocation form is namespaced /sdd:<name> everywhere (no hyphenated /sdd-)",
-          "found the stale hyphenated /sdd- form (use /sdd:<name>) at: " + ", ".join(offenders))
+          "invocation form is namespaced /sdd-emb:<name> everywhere (no hyphenated /sdd-emb-)",
+          "found the stale hyphenated /sdd-emb- form (use /sdd-emb:<name>) at: " + ", ".join(offenders))
 
     # --- every stage ends with the handoff block (the v1.8.1 output contract) ---
     # The phrase «stage-handoff block» is the contract wording every spine's final step uses;
@@ -425,7 +425,7 @@ def main() -> int:
     # The visual dashboard (the shipped "MCP exposure" feature) is opt-in but its files must
     # stay structurally sound: the MCP server is declared correctly, the server/dashboard
     # sources exist, the render libs are vendored (offline), and the `start` skill is the
-    # documented handshake. A missing piece silently breaks `/sdd:start` for everyone who opts in.
+    # documented handshake. A missing piece silently breaks `/sdd-emb:start` for everyone who opts in.
     print("== dashboard (mcp server + ui) ==")
     mcp_path = ROOT / ".mcp.json"
     if check(mcp_path.exists(), ".mcp.json exists", ".mcp.json is missing (the dashboard MCP server is undeclared)"):
@@ -435,22 +435,22 @@ def main() -> int:
             mcp = None
             check(False, "", f".mcp.json is not valid JSON: {exc}")
         if mcp is not None:
-            srv = (mcp.get("mcpServers") or {}).get("sdd-dashboard")
+            srv = (mcp.get("mcpServers") or {}).get("sdd-emb-dashboard")
             check(isinstance(srv, dict),
-                  ".mcp.json declares the 'sdd-dashboard' server",
-                  ".mcp.json has no mcpServers.sdd-dashboard entry")
+                  ".mcp.json declares the 'sdd-emb-dashboard' server",
+                  ".mcp.json has no mcpServers.sdd-emb-dashboard entry")
             if isinstance(srv, dict):
                 check(srv.get("command") == "bun",
-                      ".mcp.json sdd-dashboard launches with `bun`",
-                      f".mcp.json sdd-dashboard command is {srv.get('command')!r}, expected 'bun'")
+                      ".mcp.json sdd-emb-dashboard launches with `bun`",
+                      f".mcp.json sdd-emb-dashboard command is {srv.get('command')!r}, expected 'bun'")
                 args = srv.get("args") or []
                 joined = " ".join(args) if isinstance(args, list) else str(args)
                 check("${CLAUDE_PLUGIN_ROOT}/server" in joined,
-                      ".mcp.json sdd-dashboard runs in ${CLAUDE_PLUGIN_ROOT}/server (not the plugin root)",
-                      ".mcp.json sdd-dashboard args must `--cwd ${CLAUDE_PLUGIN_ROOT}/server` — cwd is the plugin dir, never the project")
+                      ".mcp.json sdd-emb-dashboard runs in ${CLAUDE_PLUGIN_ROOT}/server (not the plugin root)",
+                      ".mcp.json sdd-emb-dashboard args must `--cwd ${CLAUDE_PLUGIN_ROOT}/server` — cwd is the plugin dir, never the project")
                 check("start" in args if isinstance(args, list) else False,
-                      ".mcp.json sdd-dashboard invokes the `start` package script",
-                      ".mcp.json sdd-dashboard args must end in the `start` script (bun run … start)")
+                      ".mcp.json sdd-emb-dashboard invokes the `start` package script",
+                      ".mcp.json sdd-emb-dashboard args must end in the `start` script (bun run … start)")
 
     # server/ sources — the seven modules + the Bun package manifest.
     for rel in ("server/package.json", "server/server.ts", "server/state.ts",
@@ -481,7 +481,7 @@ def main() -> int:
     # The `start` skill — the documented handshake (auto-discovered as a skill above, but
     # its dashboard-specific contract must hold: it calls the handshake tool + gates on opt-in).
     start_md = ROOT / "skills" / "start" / "SKILL.md"
-    if check(start_md.exists(), "skills/start/SKILL.md exists", "skills/start/SKILL.md is missing (the /sdd:start handshake)"):
+    if check(start_md.exists(), "skills/start/SKILL.md exists", "skills/start/SKILL.md is missing (the /sdd-emb:start handshake)"):
         start_text = start_md.read_text()
         check("dashboard_handshake" in start_text,
               "skills/start references the dashboard_handshake tool",

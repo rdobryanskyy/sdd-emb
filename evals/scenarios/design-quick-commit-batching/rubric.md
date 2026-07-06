@@ -20,9 +20,9 @@ per-section commit (which would produce ~12–14 commits). PASS requires ALL of:
    file tree (committed, or visible in the uncommitted diff) — batching commits did not cancel
    the write-after-resolve behavior.
 4. The tail of the run's final message contains the stage-handoff block (*What I did* /
-   *Review* / *Run next*), and *Run next* points at a next SDD stage — `/sdd:sequences
-   rate-limit-bump`, or an auto-skip to `/sdd:data-model rate-limit-bump` or
-   `/sdd:api rate-limit-bump`: ANY of these is legal on route quick; do not require one
+   *Review* / *Run next*), and *Run next* points at a next SDD stage — `/sdd-emb:sequences
+   rate-limit-bump`, or an auto-skip to `/sdd-emb:data-model rate-limit-bump` or
+   `/sdd-emb:api rate-limit-bump`: ANY of these is legal on route quick; do not require one
    specific stage.
 
 FAIL if there are 5+ commits after `baseline`, if `sad.md` is missing or has unfilled sections

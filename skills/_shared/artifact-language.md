@@ -1,7 +1,7 @@
 # Artifact language — the `artifact_language` switch (prose ↔ structure)
 
 > **Reference-only.** Not a skill. Every artifact-writing skill reads this for the one rule of
-> the `artifact_language` key in `.claude/sdd.local.md` (defined in
+> the `artifact_language` key in `.claude/sdd-emb.local.md` (defined in
 > [`../implement/references/settings.md`](../implement/references/settings.md), default `en`):
 > **prose switches language, structure stays English.** Conversation language (questions +
 > option text) is a separate concern → [`ask-style.md`](./ask-style.md).
@@ -16,7 +16,7 @@ English, verbatim from the template. Concretely:
   fields of `tasks.json` (`title`, `dod`) and of `openapi.yaml` (`summary`, `description`).
 - **Structure (stays English):** section headings (verbatim from the template), frontmatter keys
   **and** values, file names, and every machine token listed below.
-- **The setting never leaks into artifacts:** `artifact_language` lives in `.claude/sdd.local.md`
+- **The setting never leaks into artifacts:** `artifact_language` lives in `.claude/sdd-emb.local.md`
   only. Never write it (or any other settings key) into a document — an artifact's frontmatter
   keys come **verbatim from its template**, no improvised keys in any language.
 

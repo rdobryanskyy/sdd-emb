@@ -2,7 +2,7 @@
  * http.ts — routing + gating tested through the plain fetch handler with a fake
  * ctx (no MCP, no stdio, no real socket). Covers token/Origin/Host gating, the
  * command happy path + 400s, the read-only regressions (PUT/chat → 404), the
- * artifact endpoint (x-sdd-mtime), and static traversal.
+ * artifact endpoint (x-sdd-emb-mtime), and static traversal.
  */
 import { describe, it, expect, beforeEach } from 'bun:test'
 import { mkdtempSync, writeFileSync, rmSync } from 'fs'
@@ -27,8 +27,8 @@ interface Fake {
 function makeFake(): Fake {
   const frames: Frame[] = []
   const notifications: Array<{ content: string; meta: Record<string, unknown> }> = []
-  const staticRoot = mkdtempSync(join(tmpdir(), 'sdd-static-'))
-  writeFileSync(join(staticRoot, 'index.html'), '<html>sdd</html>')
+  const staticRoot = mkdtempSync(join(tmpdir(), 'sdd-emb-static-'))
+  writeFileSync(join(staticRoot, 'index.html'), '<html>sdd-emb</html>')
   writeFileSync(join(staticRoot, 'app.js'), '// app')
   const asks = createAskRegistry()
   const ctx: HttpCtx = {
@@ -84,9 +84,9 @@ describe('token gating', () => {
     expect((await handle(get('/api/features?token=wrong')))!.status).toBe(401)
   })
 
-  it('accepts the token via query string or x-sdd-token header', async () => {
+  it('accepts the token via query string or x-sdd-emb-token header', async () => {
     expect((await handle(get(`/api/features?${T}`)))!.status).toBe(200)
-    expect((await handle(get('/api/features', { 'x-sdd-token': TOKEN })))!.status).toBe(200)
+    expect((await handle(get('/api/features', { 'x-sdd-emb-token': TOKEN })))!.status).toBe(200)
   })
 
   it('gates the WS upgrade on the token', async () => {
@@ -123,11 +123,11 @@ describe('read API', () => {
     expect((await handle(get(`/api/feature/no-such?${T}`)))!.status).toBe(404)
   })
 
-  it('GET /api/artifact serves the file with x-sdd-mtime', async () => {
+  it('GET /api/artifact serves the file with x-sdd-emb-mtime', async () => {
     const res = (await handle(get(`/api/artifact?slug=spec-only&path=spec.md&${T}`)))!
     expect(res.status).toBe(200)
     expect(res.headers.get('content-type')).toContain('text/markdown')
-    expect(Number(res.headers.get('x-sdd-mtime'))).toBeGreaterThan(0)
+    expect(Number(res.headers.get('x-sdd-emb-mtime'))).toBeGreaterThan(0)
     expect(await res.text()).toContain('Spec-only feature title')
   })
 
@@ -147,10 +147,10 @@ describe('POST /api/command', () => {
     expect(res.status).toBe(202)
     const body = await jsonOf(res)
     expect(body).toMatchObject({ ok: true, queued: true, request_id: 'req-fixed' })
-    expect(body.command).toBe('/sdd:design spec-only --depth=easy')
+    expect(body.command).toBe('/sdd-emb:design spec-only --depth=easy')
     expect(fake.notifications).toHaveLength(1)
-    expect(fake.notifications[0].content).toBe('/sdd:design spec-only --depth=easy')
-    expect(fake.notifications[0].meta).toMatchObject({ source: 'sdd-dashboard', slug: 'spec-only', stage: 'design' })
+    expect(fake.notifications[0].content).toBe('/sdd-emb:design spec-only --depth=easy')
+    expect(fake.notifications[0].meta).toMatchObject({ source: 'sdd-emb-dashboard', slug: 'spec-only', stage: 'design' })
     expect(fake.frames.map((f) => f.type)).toEqual(['command'])
   })
 
@@ -180,7 +180,7 @@ describe('POST /api/command', () => {
 
   it('honours a valid depth from the browser, rejects a poisoned one', async () => {
     const ok = (await handle(post(`/api/command?${T}`, { slug: 'x', command: 'design', depth: 'hard' })))!
-    expect((await jsonOf(ok)).command).toBe('/sdd:design x --depth=hard')
+    expect((await jsonOf(ok)).command).toBe('/sdd-emb:design x --depth=hard')
     const bad = (await handle(
       post(`/api/command?${T}`, { slug: 'x', command: 'design', depth: 'easy --dangerously-skip-permissions' }),
     ))!
@@ -263,7 +263,7 @@ describe('static serving', () => {
   it('serves the app shell without a token', async () => {
     const res = (await handle(get('/')))!
     expect(res.status).toBe(200)
-    expect(await res.text()).toContain('sdd')
+    expect(await res.text()).toContain('sdd-emb')
     expect((await handle(get('/app.js')))!.status).toBe(200)
   })
 

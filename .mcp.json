@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "sdd-dashboard": {
+    "sdd-emb-dashboard": {
       "command": "bun",
       "args": ["run", "--cwd", "${CLAUDE_PLUGIN_ROOT}/server", "--silent", "start"]
     }

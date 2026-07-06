@@ -24,7 +24,7 @@ A consuming skill resolves the level once, at the top of its run, in this preced
 
 1. **A `--depth=easy|medium|hard` argument** passed on the invocation, if present — silent, no question.
 2. **The opening `AskUserQuestion`** — ONE depth-selection question, phrased per [`ask-style.md`](./ask-style.md) (explanatory + every term glossed). Its **default option** (the «(Recommended)» first option) is:
-   - the `interview_depth` value from `.claude/sdd.local.md` if that file exists and sets it, else
+   - the `interview_depth` value from `.claude/sdd-emb.local.md` if that file exists and sets it, else
    - **medium**.
    The user can always override per run — the saved default only pre-selects the recommendation; it never skips the question (unless `--depth=` was passed).
 

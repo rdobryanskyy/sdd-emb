@@ -7,7 +7,7 @@ description: >
   Use to fix a reported bug spec-first: reproduce it, trace the symptom to the owning feature's
   acceptance criteria, pin it with a failing (RED) test, apply the minimal GREEN fix through the
   same per-task gate implement uses, then patch the spec so the bug class can't silently return.
-  Triggers on "fix {bug}", "fix the bug in {slug}", "bug in {feature}", "/sdd:fix {slug}",
+  Triggers on "fix {bug}", "fix the bug in {slug}", "bug in {feature}", "/sdd-emb:fix {slug}",
   "regression in {slug}", "полагодь баг", "виправ багу", "регресія в {slug}", "чому зламалось".
   Triage is three-way: AC exists and is violated (regression) / AC is ambiguous (spec-bug —
   patch the wording) / no AC covers it (gap — add one, marked added-by-fix). Works on a repo
@@ -31,15 +31,15 @@ The engineer on the bug (drives). PM / Tech Lead is consulted only when triage l
 
 - `<slug>` — optional; pass it when you know which feature owns the bug, otherwise step 2 finds it from the symptom.
 - The bug report, in any form — a sentence, a stack trace, a failing request, a screenshot description.
-- **Soft gate (never hard-refuse):** `docs/features/` with ≥1 `spec.md`. Absent (a brownfield repo that never ran the backbone) → still run, in **no-spec mode**: steps 1 → 3 → 4 → record, skip the spec patch, and recommend `/sdd:survey` in the handoff.
-- (Optional) `.claude/sdd.local.md` — gate command overrides; otherwise the commands are detected per `implement`'s cascade.
+- **Soft gate (never hard-refuse):** `docs/features/` with ≥1 `spec.md`. Absent (a brownfield repo that never ran the backbone) → still run, in **no-spec mode**: steps 1 → 3 → 4 → record, skip the spec patch, and recommend `/sdd-emb:survey` in the handoff.
+- (Optional) `.claude/sdd-emb.local.md` — gate command overrides; otherwise the commands are detected per `implement`'s cascade.
 
 No depth dial and no `.size` here — a fix is one size, and the interview is the bug report itself.
 
 ## Protocol
 
 1. **Intake — reproduce before touching anything.** At most 1–2 `AskUserQuestion` (phrasing per [`../_shared/ask-style.md`](../_shared/ask-style.md)), only for what the report doesn't already say: expected vs actual, the steps, the scope (one user? all? since when?). Outcome: a one-line reproduction statement — «doing X, expected Y, got Z». A bug you can't state this way isn't ready to fix.
-2. **Trace to spec (triage).** Grep `docs/features/*/spec.md` (+ the candidate slug's `_fixes/` for a recurrence) for the reproduction's domain terms; locate the owning slug and the closest §5 AC. In parallel, dispatch [`explorer`](../../agents/explorer.md) — `subagent_type: "sdd:explorer"` (fallback `Explore` / inline per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)) — to localize the code path. Three outcomes (decision table → [`./references/triage.md`](./references/triage.md)):
+2. **Trace to spec (triage).** Grep `docs/features/*/spec.md` (+ the candidate slug's `_fixes/` for a recurrence) for the reproduction's domain terms; locate the owning slug and the closest §5 AC. In parallel, dispatch [`explorer`](../../agents/explorer.md) — `subagent_type: "sdd-emb:explorer"` (fallback `Explore` / inline per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)) — to localize the code path. Three outcomes (decision table → [`./references/triage.md`](./references/triage.md)):
    - **(a) Regression** — an AC describes the expected behaviour and the code violates it. The spec is right; only the code changes.
    - **(b) Spec-bug** — the AC exists but a reasonable implementer could read it and produce the observed behaviour. The wording is the root cause — the AC gets patched (with the user, step 5).
    - **(c) Gap** — no AC covers the behaviour. A new AC is added to §5, marked `<!-- added-by-fix: <date> -->`.
@@ -47,7 +47,7 @@ No depth dial and no `.size` here — a fix is one size, and the interview is th
 3. **RED — pin the bug with a failing test.** Write the **minimal** test that reproduces the bug at the level the behaviour implies (unit for a rule, integration for a dependency behaviour, e2e for a flow). Run it and classify the first run per [`../implement/references/tdd-loop.md`](../implement/references/tdd-loop.md) — it must be a **GOOD red** (fails on the assertion that encodes the *expected* behaviour); quote the failing line. A bug that can't be pinned by a test → STOP and say so — an unverifiable fix is a guess.
 4. **GREEN + GATE — minimal fix.** Make the RED test pass with the smallest change; **no drive-by refactors** (anything the fix exposes goes to the record's follow-ups). Then the same per-task gate `implement` runs: unit + lint + vet (+ integration when available), via the detected commands (detection cascade → [`../implement/references/command-detection.md`](../implement/references/command-detection.md)). Red gate → fix it, never commit around it.
 5. **Spec patch + fix record.** Apply the step-2 branch — (a) nothing to patch, re-verify the AC; (b) patch the AC wording; (c) add the new AC with the marker. **Any spec change is confirmed with the user** in one `AskUserQuestion` (before/after wording shown). Then write `docs/features/<slug>/_fixes/<date>-<short-slug>.md` from [`./templates/fix-record.md`](./templates/fix-record.md): symptom → root cause → the pinning test → the spec patch (or why there is none).
-6. **Commit + handoff.** Propose commit `fix: <slug> <short summary>` with trailers `SDD-Fix: <date>-<short-slug>` and `SDD-AC: <id>` (when an AC was traced). Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant — `/clear` optional): *What I did* + *Review* (the diff, `_fixes/<date>-<short-slug>.md`, the spec patch if any) + *Run next*: resume what you were doing; **when the fix touched >5 files or crossed a module boundary, recommend `/sdd:review <slug>`** — a recommendation, not a gate.
+6. **Commit + handoff.** Propose commit `fix: <slug> <short summary>` with trailers `SDD-Fix: <date>-<short-slug>` and `SDD-AC: <id>` (when an AC was traced). Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant — `/clear` optional): *What I did* + *Review* (the diff, `_fixes/<date>-<short-slug>.md`, the spec patch if any) + *Run next*: resume what you were doing; **when the fix touched >5 files or crossed a module boundary, recommend `/sdd-emb:review <slug>`** — a recommendation, not a gate.
 
 ## Definition of Done
 
@@ -78,5 +78,5 @@ No depth dial and no `.size` here — a fix is one size, and the interview is th
 
 ## Example invocation
 
-> **User:** «/sdd:fix — discounts are applied twice when the user clicks pay twice fast»
+> **User:** «/sdd-emb:fix — discounts are applied twice when the user clicks pay twice fast»
 > **Skill:** intake confirms: expected one discount per order, got two on a double-click (all users, since the checkout-discounts release). Trace: `docs/features/checkout-discounts/spec.md` AC-04 says «a discount is applied to an order at most once» → the code violates it → **regression**. `explorer` localizes the apply-discount handler (no idempotency check). RED: an integration test posting the same apply twice asserts one discount row — fails with `got 2, want 1` (GOOD red). GREEN: guard on the existing uniqueness key; gate clean. Spec: nothing to patch (AC-04 was right). Record `_fixes/2026-06-12-double-discount.md`; commit `fix: checkout-discounts double-applied discount` + `SDD-Fix:` / `SDD-AC: AC-04` trailers. Handoff: 2 files touched → no review push; resume.
