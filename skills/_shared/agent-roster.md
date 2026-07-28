@@ -22,6 +22,10 @@ Model is chosen by the **kind of work**, not by taste — judgment gets the stro
 
 Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspective synthesis) is where a stronger model pays off; execution (write code/tests to a clear spec) is well served by a balanced model and escalates only when it gets stuck; a read-only scan is cheap. The **ideation trio** (`specify` step 3, gated by the depth dial) follows the same logic: `researcher` is gathering-and-citing work (balanced model + web tools), while `strategist` and `analyst` are judgment (generating real alternatives, synthesizing across lenses) and get the strongest model. (Treat model-by-role as a sound principle — the headline "stronger orchestrator + cheaper workers wins by X%" claim from the multi-agent literature did not survive verification, so we lean on role-fit, not a magic ratio.)
 
+## Embroidery domain overlay
+
+The roster remains role-based; it does not add a duplicate set of embroidery agents. For work that controls or produces machine-embroidery artefacts, dispatch the same role with the conditional [`embroidery-domain.md`](./embroidery-domain.md) overlay. It gives `explorer`/`researcher` the domain-research protocol, `critic` the requirements-coherence checks, and `reviewer` the implementation safety and evidence checks. The dispatcher must name the format, machine profile, design path, and relevant domain docs — a generic agent must never infer production limits.
+
 ## Dispatching (`subagent_type`)
 
 These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdd-emb:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdd-emb-…` prefix:

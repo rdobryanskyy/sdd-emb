@@ -503,6 +503,13 @@ anything not independently confirmed. `embroidery-export` is the one skill that 
 tooling — it runs an actual open-source embroidery library (`pyembroidery` by default) rather than
 hand-computing file bytes, and refuses to call an export successful without round-tripping it.
 
+The same knowledge is now connected to the generic SDD roles through the conditional
+[`embroidery domain overlay`](./skills/_shared/embroidery-domain.md): `survey`/`explorer` map actual
+machine-code boundaries, `researcher` investigates unresolved format or machine facts, `critic`
+checks requirements and architecture for unsafe domain assumptions, and `review` adds machine-code
+safety plus QA/round-trip evidence checks. It activates only for embroidery work; regular code and
+the existing documentation-generation templates follow the unchanged SDD flow.
+
 ## Repository layout
 
 ```

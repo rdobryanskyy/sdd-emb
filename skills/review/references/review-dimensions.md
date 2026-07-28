@@ -19,6 +19,15 @@ A stage-1 finding means the feature does not yet meet its spec — it blocks shi
 - **Boundary violations.** Stayed inside the module(s) the tasks named; no weakened test; no forbidden DB construct vs the repo's migration rules.
 - **Test adequacy.** Do the tests exercise the real behaviour, including the failure paths — or only the happy path?
 
+### Conditional embroidery-machine dimensions
+
+Apply these only when the dispatch prompt activates [`../../_shared/embroidery-domain.md`](../../_shared/embroidery-domain.md). They extend the existing code-quality pass; they do not change ordinary reviews.
+
+- **Profile and units.** The target machine/profile, format and coordinate units are explicit at the boundary; conversion is covered by a test and no generic/TBD domain value is silently hard-coded as device truth.
+- **Safe output boundary.** Length, hoop, colour/needle and unsupported-input validation happens before machine/file side effects; failure leaves no misleading success or partial-production claim.
+- **Format integrity.** Binary embroidery files are produced by a verified serializer, and an export has a parsing/round-trip test or an explicitly reported limitation — never hand-fabricated bytes.
+- **Physical evidence.** If the diff mutates a stitch plan or exported file, cite the associated `embroidery-qa` and, for exports, round-trip report. Their absence blocks only a *production-ready physical-output* conclusion, not a narrowly scoped source-code verdict.
+
 ## Dispatch shape
 
 Reuse the clean-context discipline from [`../../_shared/critic.md`](../../_shared/critic.md): the reviewer has read-only tools, re-reads `spec.md` / contracts / ADRs itself, and emits **cited** findings only:

@@ -23,6 +23,8 @@ the parent conversation, so everything you need is in the prompt or the repo). T
 module boundaries, the layering pattern, where a similar feature lives, the error/wiring/test
 conventions, the migration naming convention.
 
+**Embroidery-domain routing.** When the prompt says `embroidery domain overlay: active`, first read the relevant part of [`skills/_shared/embroidery-domain.md`](../skills/_shared/embroidery-domain.md) and the named local domain document(s). Locate the real file-format readers/writers, coordinate and unit conversions, machine/profile configuration, validation and abort paths, simulators/fixtures, and the closest tested precedent. Report evidence only; do not infer a machine limit from a filename or design a protocol.
+
 **Bug localization (dispatched by `fix`).** Here the prompt gives a reproduction statement
 («doing X, expected Y, got Z») instead of a map request. Trace the symptom to its code path:
 grep the domain nouns to the entry point, follow the call chain, and return the **root-cause

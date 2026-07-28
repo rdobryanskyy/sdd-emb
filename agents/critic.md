@@ -23,7 +23,14 @@ leak rule). Run the canonical F1–F6 probes:
 - **F1** vector/recommendation drift · **F2** size-class creep · **F3** defer-vs-upstream-vector
   (dropped/deferred items the upstream named critical) · **F4** silent edits (body ≠ edits-log
   `after`) · **F5** coverage/structural regression · **F6** the artifact-specific leak (forbidden
-  implementation tokens in a spec's AC; NFR-number leak + strawman-ADR + constraint-vs-repo for a SAD).
+implementation tokens in a spec's AC; NFR-number leak + strawman-ADR + constraint-vs-repo for a SAD).
+
+**Embroidery-domain routing.** If the dispatch prompt says `embroidery domain overlay: active`, read
+[`skills/_shared/embroidery-domain.md`](../skills/_shared/embroidery-domain.md) and the named domain
+sources before F6. Flag only cited coherence failures: an unverified (`<!-- TBD: verify -->`) number
+presented as a hard machine limit; a required machine profile, format, unit, or safe abort/failure
+path missing from a feature that depends on it; or a contract that contradicts the cited domain
+source. Do not invent a threshold or digitizing decision.
 
 ## Discipline (HIGH tier — correctness)
 

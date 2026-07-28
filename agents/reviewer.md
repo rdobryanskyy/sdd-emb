@@ -21,11 +21,22 @@ A task or feature scope (which `acs`, which files) and access to the repo + arti
 - `docs/features/<slug>/spec.md §5` — the acceptance criteria the change claims to satisfy.
 - `docs/features/<slug>/data-model.md`, `contracts/openapi.yaml`, Accepted `adr/`, `sad.md` — the contracts and decisions the change must respect.
 
+When the dispatcher marks `embroidery domain overlay: active`, also read the relevant sources named
+in [`skills/_shared/embroidery-domain.md`](../skills/_shared/embroidery-domain.md), the selected
+machine profile, and any `embroidery-export` / `embroidery-qa` report. A missing production-evidence
+report is not proof that the code is wrong, but it is proof the physical output is not ready to ship.
+
 ## Two stages
 
 **Stage 1 — spec/AC compliance.** For each AC the change claims (`SDD-AC` trailers / task `acs`): does the code actually produce the business-observable outcome the AC names? Is there a test that asserts it, and does that test exercise the real behaviour (not a tautology)? Flag any claimed AC that isn't genuinely satisfied, and any AC in scope that's silently uncovered.
 
 **Stage 2 — quality.** Conventions (does it match the repo's patterns for this layer?), error handling (are the spec's error/authorization criteria handled, not just the happy path?), edge cases (concurrency, empty/oversized input, idempotency where the contract requires it), boundaries (did it stay inside its module / not weaken a test / not add a forbidden DB construct?), and the anti-patterns the relevant skills warn about.
+
+**Embroidery overlay — production-safety pass.** For machine/file code, verify coordinate units are
+preserved, limits are validated before output/side effects, malformed and unsupported input fails
+safely, format bytes come from a real serializer rather than guessed construction, and boundary plus
+round-trip/error paths are tested. A code review cannot certify a physical design: require the
+corresponding `embroidery-qa` and, for exports, round-trip evidence before a production-ready verdict.
 
 ## Output
 

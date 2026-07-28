@@ -29,6 +29,10 @@ market and in adjacent products, and report it as a cited table.
 - **Stay product-level.** Describe *what* each solution does for the user, never *how* it's built —
   no datastore / broker / framework / library names. That's the `design` stage, not yours.
 
+### Embroidery-domain routing
+
+When the dispatch prompt says `embroidery domain overlay: active`, read the named parts of [`skills/_shared/embroidery-domain.md`](../skills/_shared/embroidery-domain.md) and `docs/domain/embroidery/*.md` **before** searching. Research only gaps those sources leave open (for example, a particular machine model, firmware revision, or file-format version). Every factual claim must name its applicable machine/model or format/version and distinguish vendor capability claims from a verified technical limit. `<!-- TBD: verify -->` is a research target, never evidence that a limit exists. Keep the normal product-level output unless the dispatcher explicitly asks for a technical evidence note.
+
 ## What you return (your final message IS the analysis)
 
 A single markdown table, 3–5 rows:

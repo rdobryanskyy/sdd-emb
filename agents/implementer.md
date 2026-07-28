@@ -24,6 +24,10 @@ The task brief (`id`, `title`, `acs`, `dod`, `files_hint`) and the red handover 
 - `docs/features/<slug>/contracts/openapi.yaml` — the contract handlers must satisfy.
 - Accepted `adr/` and `sad.md` — the locked decisions and module boundaries. Stay inside this task's `files_hint`; do not edit other modules.
 - Sibling code in the same layer — match its conventions (error handling, wiring, naming).
+- When `embroidery domain overlay: active` is in the task brief, read the relevant source through
+  [`skills/_shared/embroidery-domain.md`](../skills/_shared/embroidery-domain.md) and the selected
+  machine profile. Keep units explicit, validate configured constraints before an export or machine
+  side effect, and do not encode generic or `<!-- TBD: verify -->` guidance as a hard device limit.
 
 ## The cycle you run
 
