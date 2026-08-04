@@ -35,7 +35,7 @@ The digitizer or the calling feature's implementer.
 
 - `<design>` — the same slug used by `embroidery-digitize` / `embroidery-optimize`.
 - **Gate (hard-refuse if missing):** `docs/embroidery/<design>/stitch-plan.json`. Absent → STOP and
-  point: «run `embroidery-digitize <design>` first».
+  point: «спочатку запусти `embroidery-digitize <design>`».
 - `<format(s)>` — one or more of DST / PES / EXP / JEF / VP3 / HUS / XXX / ART / EMB. Ask if not
   given.
 - **Strongly expected:** `docs/domain/embroidery/file-formats.md` (per-format encoding model, hard
@@ -91,8 +91,8 @@ The digitizer or the calling feature's implementer.
 7. **Self-check.** The round-trip validation in step 4 **is** this skill's structural self-check — a
    file that hasn't round-tripped is not considered exported, it's considered a draft.
 8. **Handoff.** Propose commit `embroidery-export: <design> (<format list>)`. Then **emit the
-   stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (formats
-   produced, round-trip result) + *Review* (the exported file(s), `export-report.md`) + *Run next*:
+   stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *Що я зробив* (formats
+   produced, round-trip result) + *Перевір перед тим як продовжити* (the exported file(s), `export-report.md`) + *Що далі*:
    `/sdd-emb:embroidery-qa <design>` before treating the design as production-ready.
 
 ## Definition of Done

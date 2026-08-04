@@ -83,8 +83,8 @@ The digitizer (human or the calling feature's implementer).
    with a recorded source; fabric/stabilizer/hoop are recorded; the color-block sequence respects
    any stated hard ordering.
 7. **Handoff.** Propose commit `embroidery-digitize: <design> stitch plan`. Then **emit the
-   stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review*
-   (`stitch-plan.md`, `stitch-plan.json`) + *Run next*: `/sdd-emb:embroidery-optimize <design>` (or
+   stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *Що я зробив* + *Перевір перед тим як продовжити*
+   (`stitch-plan.md`, `stitch-plan.json`) + *Що далі*: `/sdd-emb:embroidery-optimize <design>` (or
    `/sdd-emb:embroidery-export <design>` directly for a design with only one or two regions).
 
 ## `stitch-plan.json` contract (read by `embroidery-optimize` / `embroidery-export` / `embroidery-qa`)

@@ -48,7 +48,7 @@ After each `AskUserQuestion` choice:
 
 1. **Score it** — how many of the three fire?
 2. **Decide:** 0 → inline, no ADR. 1 → borderline (default inline, except §4 Solution Strategy where the bar is lower because strategy is broad by definition). 2+ → ADR.
-3. **On a borderline,** ask explicitly: «This is borderline ADR-worthy because of <criterion>. Lock as ADR or keep inline?» with `Lock as ADR` (Recommended if irreversible) / `Inline only`.
+3. **On a borderline,** ask explicitly, in Ukrainian per [`../../_shared/ask-style.md`](../../_shared/ask-style.md): «Це межовий випадок для ADR через <criterion>. Зафіксувати як ADR чи лишити inline?» with `Lock as ADR` (Recommended if irreversible) / `Inline only`.
 
 ## Why 5–12 per M feature
 

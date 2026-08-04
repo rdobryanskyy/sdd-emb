@@ -3,8 +3,12 @@
 > **Reference-only.** Not a skill. Every artifact-writing skill reads this for the one rule of
 > the `artifact_language` key in `.claude/sdd-emb.local.md` (defined in
 > [`../implement/references/settings.md`](../implement/references/settings.md), default `en`):
-> **prose switches language, structure stays English.** Conversation language (questions +
-> option text) is a separate concern → [`ask-style.md`](./ask-style.md).
+> **prose switches language, structure stays English.** This key governs **documents on disk
+> only**. Two separate, unconditional concerns live elsewhere and do NOT read this setting: the
+> language of `AskUserQuestion` prompts → [`ask-style.md`](./ask-style.md) (always Ukrainian), and
+> all other chat-facing narration (banners, refuse/warn messages, the handoff block) →
+> [`chat-language.md`](./chat-language.md) (also always Ukrainian). Setting `artifact_language: en`
+> does **not** make chat narration English — the two are independent.
 
 ## The rule
 

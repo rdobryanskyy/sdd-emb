@@ -20,7 +20,7 @@ Item-banks below are guidance, not a cap. Pick how many items to draft from the 
 - **§5 Building block view.** 1 ¶ on the layering style + why. Decision-bank: extend an existing module vs a new one; layering style (default = the repo's convention; only ask on divergence); internal sub-package layout. **C4 Container (L2)** Mermaid block — **one `Container` per declared `target_surface`** (a fullstack `[backend-service, web-frontend]` draws both the backend-API container and the web/SPA container; a `[backend-service, mobile-app]` draws the API + the mobile app), plus the feature's other modules/services as `Container`, datastores as `ContainerDb`. Syntax → [`./c4-mermaid-syntax.md`](./c4-mermaid-syntax.md).
 - **§6 Runtime view.** Seed the **primary critical flow(s)** here — happy path always; a failure-mode flow if §4 picked async or has an external dependency; an event-propagation flow if §4 picked events. design **seeds**; the `sequences` stage then covers **every §5 AC** (no cap — a flow per critical user story, branches for the rest). One `sequenceDiagram` per flow, actors + ≥2 participants + ≥3 arrows, referencing §5 containers by name (no inventing). Messages are semantic — no HTTP verbs / paths / status codes (those arrive at the `api` stage). Never N/A for M+; XS/S keeps ≥1 happy-path flow.
 - **§7 Deployment view.** Topology in 2–3 sentences (where it runs, replicas, scaling thresholds). Monitoring rows (metrics / alerts / tracing) from the repo's observability conventions + spec NFR latency targets. Scaffold → [`../templates/deployment.md`](../templates/deployment.md). XS/S with no deployment change → `<!-- N/A: reuses existing deployment unit, no infra change -->` (still write a one-sentence justification).
-- **§8 Crosscutting concepts.** Table rows: logging / auth / errors / ID strategy / i18n / observability / events / rate-limiting (where applicable). **Default = inherit the repo's conventions**, bundled as one question («I'm assuming the repo's defaults. Override?» / `Keep defaults` / `Custom for §X`). Per-feature override only if spec §6 NFR or §6.1 Security signals it.
+- **§8 Crosscutting concepts.** Table rows: logging / auth / errors / ID strategy / i18n / observability / events / rate-limiting (where applicable). **Default = inherit the repo's conventions**, bundled as one question, in Ukrainian per [`../../_shared/ask-style.md`](../../_shared/ask-style.md) («Я припускаю дефолти репозиторію. Перевизначити?» / `Keep defaults` / `Custom for §X`). Per-feature override only if spec §6 NFR or §6.1 Security signals it.
 - **§9 Architecture decisions.** Table auto-populates as ADRs spawn in §4–§8 (the blast-radius gate). No drafting here — starts empty, fills during the Socratic walk.
 - **§10 Quality requirements.** **≥3 scenarios** (one per §1 quality goal) in When / Then / How-verify form. Numbers from spec §6 NFR **verbatim** — no inventing, no rounding (a critic F6 hit). Forbidden: «fast» / «scalable» / «highly available» without a number. How-verify = a concrete test / chaos drill / load-test / metric, not «integration test».
 - **§11 Risks & technical debt.** Auto-generated at the end of the walk from the edits-log + spec §8 Open questions + the scan's brownfield gotchas. Decision-bank: outbox/queue lag during an outage; schema-versioning debt; brownfield drift; security debt accepted in v1; accepted-debt rows. **Open-architectural-decision rows** come from Save-as-OQ resolutions (severity literal `Open question`). Never N/A.
@@ -44,16 +44,16 @@ The 4-state machine, the mini-recap-every-5, and the soft per-section budget all
 | Section | Typical Qs | Note |
 |---|---|---|
 | §1 Intro & goals | 0–1 | Usually pulled from the spec. Ask if the top-3 quality goals are unclear. |
-| §2 Constraints | 1–2 | One bundled «any stack/version overrides?» |
+| §2 Constraints | 1–2 | One bundled «є перевизначення стеку/версій?» |
 | §3 Context | 0–1 | Mostly drawn from spec + the scan. |
 | §4 Solution strategy | 2–4 | The dense one — strategic choices, expect ADRs. |
 | §5 Building blocks | 1–3 | Module boundaries, layering style. |
 | §6 Runtime | 1–2 | Which failure modes get a diagram. |
 | §7 Deployment | 0–2 | Often `<!-- N/A -->` for a feature inside an existing unit. |
-| §8 Crosscutting | 1 bundled | «Repo defaults + overrides?» |
+| §8 Crosscutting | 1 bundled | «Дефолти репозиторію + перевизначення?» |
 | §9 ADR index | 0 | Auto-populated. |
 | §10 Quality reqs | 1–2 | Numbers from spec NFR + verify method. |
-| §11 Risks | 1–2 | «Top-3 risks?» then refine. |
+| §11 Risks | 1–2 | «Топ-3 ризики?» then refine. |
 | §12 Glossary | 0 | Auto-extracted. |
 
-**Total target: 8–20 questions across the whole pass.** Above 25 is fatigue territory — bundle harder (one question per *uncertainty*, not per *parameter*: a single «keep the repo's logging/error/ID defaults?» beats three separate questions). Slow down when the user starts replying single words three times running.
+**Total target: 8–20 questions across the whole pass.** Above 25 is fatigue territory — bundle harder (one question per *uncertainty*, not per *parameter*: a single «лишити дефолти репозиторію для логування/помилок/ID?» beats three separate questions). Slow down when the user starts replying single words three times running.

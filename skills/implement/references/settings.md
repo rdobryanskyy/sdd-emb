@@ -10,7 +10,7 @@ Created **automatically** the first time a skill needs it — normally `specify`
 
 1. If `.claude/sdd-emb.local.md` is absent, write it with **the documented frontmatter below, followed by the «What each key does» section as the file's markdown body** — so the file is self-documenting: every key carries its default, its allowed values, and a plain explanation inline, with no need to open the plugin docs.
 2. **Patch `.gitignore`** (create it if absent) to include `.claude/*.local.md` and `.worktrees/` — these are per-developer and must not be committed. (The `.claude/*.local.md` glob already covers `sdd-emb.local.md`; don't add a redundant explicit line.)
-3. Tell the user: «Wrote `.claude/sdd-emb.local.md` with documented defaults — edit it to change how the pipeline behaves.»
+3. Tell the user (in Ukrainian, per [`../../_shared/chat-language.md`](../../_shared/chat-language.md)): «Записав `.claude/sdd-emb.local.md` із задокументованими значеннями за замовчуванням — відредагуй його, щоб змінити поведінку пайплайна.»
 
 ## The documented frontmatter
 

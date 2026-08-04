@@ -36,7 +36,7 @@ The digitizer or the calling feature's implementer.
 
 - `<design>` — the same slug `embroidery-digitize` used.
 - **Gate (hard-refuse if missing):** `docs/embroidery/<design>/stitch-plan.json`. Absent → STOP and
-  point: «run `embroidery-digitize <design>` first — there is no stitch plan to optimize».
+  point: «спочатку запусти `embroidery-digitize <design>` — немає плану стібків для оптимізації».
 - (Optional) `docs/domain/embroidery/machine-constraints.md` — the trim-after-N-consecutive-jumps
   convention and jump-length thresholds. Absent → use the generic "trim after 3–5 consecutive jumps"
   convention and say so in the report.
@@ -75,8 +75,8 @@ The digitizer or the calling feature's implementer.
    constraint from the input still holds in the output.
 10. **Handoff.** Propose commit `embroidery-optimize: <design> (Δjumps, Δtrims, Δcolor-changes)`.
     Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) —
-    *What I did* (the before/after metrics) + *Review* (`optimization-report.md`, `stitch-plan.json`)
-    + *Run next*: `/sdd-emb:embroidery-export <design>` or `/sdd-emb:embroidery-qa <design>`.
+    *Що я зробив* (the before/after metrics) + *Перевір перед тим як продовжити* (`optimization-report.md`, `stitch-plan.json`)
+    + *Що далі*: `/sdd-emb:embroidery-export <design>` or `/sdd-emb:embroidery-qa <design>`.
 
 ## Definition of Done
 

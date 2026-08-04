@@ -2,7 +2,7 @@
 name: implement
 model: inherit
 effort: medium
-agents: [test-author, implementer, reviewer]
+agents: [test-author, implementer, reviewer, mathematic]
 description: >
   Use to implement a feature from its tasks.json with test-driven development — writes a failing
   test first, makes it pass, refactors, gates, and commits per task. Triggers on "implement {slug}",
@@ -22,12 +22,12 @@ This file is the spine. Each step delegates to a file in `references/`.
 
 ## Owner
 
-Tech Lead drives; the engine runs the cycle. The three subagents ship with the plugin: [`test-author`](../../agents/test-author.md) (RED), [`implementer`](../../agents/implementer.md) (GREEN/REFACTOR/GATE), [`reviewer`](../../agents/reviewer.md) (read-only review).
+Tech Lead drives; the engine runs the cycle. The three subagents ship with the plugin: [`test-author`](../../agents/test-author.md) (RED), [`implementer`](../../agents/implementer.md) (GREEN/REFACTOR/GATE), [`reviewer`](../../agents/reviewer.md) (read-only review). When a task's RED step is about to encode a nontrivial numerical/algorithmic routine that no upstream artifact already reviewed, the engine also dispatches [`mathematic`](../../agents/mathematic.md) directly, per [`../_shared/math-adversary.md`](../_shared/math-adversary.md) — cheaper to catch before the GATE than at `review`.
 
 ## Inputs
 
 - `<slug>` — feature slug.
-- **Gate (hard refuse):** `docs/features/<slug>/tasks.json`. Missing → «run `tasks <slug>` first».
+- **Gate (hard refuse):** `docs/features/<slug>/tasks.json`. Missing → «спершу запусти `tasks <slug>`».
 - Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + the **staged** migrations under `docs/features/<slug>/migrations/` (a `layer: migration` task **promotes** these into the live `migrations/` tree — see [`./references/inputs.md`](./references/inputs.md)), `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
 - Settings: `.claude/sdd-emb.local.md` (auto-created with documented defaults if absent — normally by `specify` at the backbone start; `implement` creates it too if you jump straight here) → [`./references/settings.md`](./references/settings.md).
 
@@ -35,14 +35,14 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 
 1. **Preconditions.** Verify `tasks.json` exists and parses; load the upstream artifacts list. Detail → [`./references/inputs.md`](./references/inputs.md).
 2. **Settings.** Read `.claude/sdd-emb.local.md`; if absent, auto-create it with the documented defaults (frontmatter + the «What each key does» body, self-documenting) and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`) — the same template `specify` writes. → [`./references/settings.md`](./references/settings.md).
-3. **Detect commands.** Run the stack-agnostic cascade (settings override → Makefile → package scripts → language manifests → Docker probe for the integration tier) to resolve unit / integration / lint / vet commands. Print what was detected. → [`./references/command-detection.md`](./references/command-detection.md).
+3. **Detect commands.** Run the stack-agnostic cascade (settings override → Makefile → package scripts → language manifests → Docker probe for the integration tier) to resolve unit / integration / lint / vet commands. Print what was detected, introducing the literal `detected commands:` block with a short Ukrainian lead-in sentence (e.g. "Виявлені команди:") — the block's own keys/values stay literal per [`chat-language.md`](../_shared/chat-language.md). → [`./references/command-detection.md`](./references/command-detection.md).
 4. **Build the DAG.** Parse `tasks.json`, validate `deps` is acyclic, topologically sort into phases (Kahn). Compute `task_count`, `longest_chain`, `parallel_width`. Mark serialization lanes (`layer: migration`; tasks with overlapping `files_hint`).
 5. **Pick the mode.** Run the decision tree (below; full form → [`./references/decision-tree.md`](./references/decision-tree.md)). Apply the guards.
 6. **Generate the run-plan.** Sequential → an ordered task list. Team → a shared TaskList with the full task text in each body. Workflow → a generated `Workflow` script (DAG → Kahn phases → fan-out pipeline). → [`./references/team-exec.md`](./references/team-exec.md) / [`./references/workflow-exec.md`](./references/workflow-exec.md).
-7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>`. The user sees exactly how the engine will behave before it acts.
+7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>`, introduced by a short Ukrainian lead-in sentence (e.g. "Активний режим:") — the `key=value` tokens themselves stay literal English/lowercase per [`chat-language.md`](../_shared/chat-language.md). The user sees exactly how the engine will behave before it acts.
 8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md). A `layer: migration` task first **promotes** its staged migration(s) (`docs/features/<slug>/migrations/<NN>_*`) into the live `migrations/` tree — assigning the real sequence number / timestamp per the repo's convention, in ordinal order — *then* applies + reverts them; detail → [`./references/inputs.md`](./references/inputs.md).
 9. **Per-task gate + commit.** After GREEN+REFACTOR: unit + (integration if available) + lint + vet must be clean, then commit task-scoped with trailers `SDD-Task: <id>` and `SDD-AC: <id>` (one per satisfied AC). Tasks in one **compile-coupled lane** (shared contract file in `files_hint`) pass one shared gate and one commit carrying every task's trailers — the sanctioned exception in [`./references/tdd-loop.md`](./references/tdd-loop.md) §COMMIT. Update `tracker.md` → `done`.
-10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (covered AC, commits with `SDD-Task` trailers, gate results) + *Review* (the committed diff + `tasks/tracker.md`) + *Run next* (`/clear`, then `/sdd-emb:review <slug>` — a clean-context pass over the whole diff), then `/sdd-emb:ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
+10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *Що я зробив* (covered AC, commits with `SDD-Task` trailers, gate results) + *Перевір перед тим як продовжити* (the committed diff + `tasks/tracker.md`) + *Що далі* (`/clear`, then `/sdd-emb:review <slug>` — a clean-context pass over the whole diff), then `/sdd-emb:ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
 
 ## Decision tree (compact)
 
@@ -59,7 +59,7 @@ else:                                                        → SEQUENTIAL sing
 
 ## TDD cycle (per task)
 
-`SELECT → RED → GREEN → REFACTOR → GATE → COMMIT`. The RED step is load-bearing: write the test first, run it, and **classify the first run** — GOOD red (assertion fails / unimplemented) vs BAD red (the test itself won't compile → fix the test) vs false-pass (green immediately → the test is too weak, strengthen it) vs NON-red (skipped because Docker is absent → governed by `require_integration`, counts as neither red nor green). Quote the failing line before writing any production code. Escalation on persistent red → [`./references/escalation.md`](./references/escalation.md): more-capable model → retry → split the task → if the test encodes a wrong AC, **ask a human** (never weaken the test) → rollback to the last green. `stop_on_red` decides halt vs drop-and-continue (dependents auto-block).
+`SELECT → RED → GREEN → REFACTOR → GATE → COMMIT`. At **SELECT**, if the task embeds a nontrivial algorithm/numerical method with no prior `mathematic` review from `design`/`data-model`/`tasks`, dispatch [`mathematic`](../../agents/mathematic.md) — `subagent_type: "sdd-emb:mathematic"` — on the task text before RED, per [`../_shared/math-adversary.md`](../_shared/math-adversary.md); `test-author`/`implementer` build against its recommended method rather than an unreviewed guess. The RED step is load-bearing: write the test first, run it, and **classify the first run** — GOOD red (assertion fails / unimplemented) vs BAD red (the test itself won't compile → fix the test) vs false-pass (green immediately → the test is too weak, strengthen it) vs NON-red (skipped because Docker is absent → governed by `require_integration`, counts as neither red nor green). Quote the failing line before writing any production code. Escalation on persistent red → [`./references/escalation.md`](./references/escalation.md): more-capable model → retry → split the task → if the test encodes a wrong AC, **ask a human** (never weaken the test) → rollback to the last green. `stop_on_red` decides halt vs drop-and-continue (dependents auto-block).
 
 ## Definition of Done
 

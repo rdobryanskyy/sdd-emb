@@ -19,6 +19,7 @@ Model is chosen by the **kind of work**, not by taste — judgment gets the stro
 | `researcher` | competitive / adjacent-solution research (ideation) | `sonnet` | `medium` | Read, Grep, Glob, WebSearch, WebFetch |
 | `strategist` | generate the 3 strategic approaches (judgment) | `opus` | `high` | Read, Grep, Glob |
 | `analyst` | multi-perspective review of approaches (judgment) | `opus` | `high` | Read, Grep, Glob |
+| `mathematic` | mathematical / algorithmic adversary (judgment) | `opus` | `high` | Read, Grep, Glob, Bash |
 
 Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspective synthesis) is where a stronger model pays off; execution (write code/tests to a clear spec) is well served by a balanced model and escalates only when it gets stuck; a read-only scan is cheap. The **ideation trio** (`specify` step 3, gated by the depth dial) follows the same logic: `researcher` is gathering-and-citing work (balanced model + web tools), while `strategist` and `analyst` are judgment (generating real alternatives, synthesizing across lenses) and get the strongest model. (Treat model-by-role as a sound principle — the headline "stronger orchestrator + cheaper workers wins by X%" claim from the multi-agent literature did not survive verification, so we lean on role-fit, not a magic ratio.)
 
@@ -26,11 +27,22 @@ Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspe
 
 The roster remains role-based; it does not add a duplicate set of embroidery agents. For work that controls or produces machine-embroidery artefacts, dispatch the same role with the conditional [`embroidery-domain.md`](./embroidery-domain.md) overlay. It gives `explorer`/`researcher` the domain-research protocol, `critic` the requirements-coherence checks, and `reviewer` the implementation safety and evidence checks. The dispatcher must name the format, machine profile, design path, and relevant domain docs — a generic agent must never infer production limits.
 
+## Math-adversary overlay
+
+`mathematic` is a specialized judgment role, not a stage everyone dispatches by default. It is
+routed in — by the calling skill, never by another subagent (subagents cannot spawn subagents; see
+the shared contract, point 3, below) — whenever the artifact under review commits to a nontrivial
+algorithm, numerical method, or geometric/statistical/signal-processing pipeline. It runs as a
+**companion pass** alongside `critic`/`devils-advocate` (same round, same inputs, findings merged
+into the same resolution flow) or as a **direct pass** when a task/module *is* the mathematical
+decision. Full trigger conditions, per-skill integration points, and the dispatch prompt contract:
+[`math-adversary.md`](./math-adversary.md).
+
 ## Dispatching (`subagent_type`)
 
 These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdd-emb:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdd-emb-…` prefix:
 
-`sdd-emb:explorer` · `sdd-emb:test-author` · `sdd-emb:implementer` · `sdd-emb:reviewer` · `sdd-emb:critic` · `sdd-emb:devils-advocate` · `sdd-emb:researcher` · `sdd-emb:strategist` · `sdd-emb:analyst`
+`sdd-emb:explorer` · `sdd-emb:test-author` · `sdd-emb:implementer` · `sdd-emb:reviewer` · `sdd-emb:critic` · `sdd-emb:devils-advocate` · `sdd-emb:researcher` · `sdd-emb:strategist` · `sdd-emb:analyst` · `sdd-emb:mathematic`
 
 So when a skill says «dispatch the `explorer` agent», the call is `subagent_type: "sdd-emb:explorer"`. If the namespaced agent isn't available at runtime, fall back to the general-purpose (or `Explore`) agent the skill names, passing the same prompt. A fallback agent never reads `agents/*.md` — everything it must know arrives in the prompt, **including the async report-delivery instruction** (shared-contract point 2 below) when the host runs it in background/teammate mode.
 
@@ -50,7 +62,7 @@ env var  >  per-invocation (the Agent call)  >  model_<role>  >  judgment_model 
 
 **`judgment_model`** (`.claude/sdd-emb.local.md`; `opus | fable`, default `opus`) is the one-switch
 tier for the **judgment agents** — `reviewer` / `critic` / `devils-advocate` / `strategist` /
-`analyst`. Setting it to `fable` raises all five to the Mythos-tier model without touching
+`analyst` / `mathematic`. Setting it to `fable` raises all six to the Mythos-tier model without touching
 `agents/*.md` (their frontmatter stays the tier-alias default); a per-role `model_<role>` key
 still wins for its role. It never applies to execution (`test-author` / `implementer`) or
 gathering (`explorer` / `researcher`) roles. See the settings doc:

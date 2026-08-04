@@ -6,23 +6,23 @@ The canonical question/option contract — junior-friendly, bilingual, label = n
 
 ```
 Question:
-  §4 Solution Strategy — how do the two modules talk to each other?
-  CONTEXT: module A writes a record, module B must react to it (e.g. send a notification).
-  We're deciding whether B is called inline or reacts to an event later.
-  WHY IT MATTERS: this is irreversible (changing it after data accumulates is a multi-week
-  migration) and multi-module (it changes the contract both A and B see) — blast-radius ≈ 3/3,
-  so this will spawn an ADR. The trade-off is coupling vs added moving parts.
-  Read the option descriptions before choosing.
+  §4 Solution Strategy — як два модулі спілкуються між собою?
+  CONTEXT: модуль A записує рядок, модуль B має відреагувати (наприклад, надіслати сповіщення).
+  Вирішуємо: B викликається одразу (inline) чи реагує на подію пізніше.
+  WHY IT MATTERS: це незворотне рішення (змінити його після накопичення даних — міграція на кілька
+  тижнів) і зачіпає кілька модулів (змінює контракт, який бачать і A, і B) — blast-radius ≈ 3/3,
+  тож це заспавнить ADR. Компроміс: зв'язаність (coupling) проти додаткових рухомих частин.
+  Прочитай описи опцій перед вибором.
 
 Options:
-  - label: "Async events (Recommended) (→ spawn ADR-0001)"
-    description: "A writes its record and emits an event; B consumes it in the background. ПЛЮСИ: B can be down without blocking A's writes — supports the availability quality goal; the modules deploy independently. МІНУСИ: needs an event-delivery mechanism (a table A writes events into within the same transaction, plus a worker that reads and dispatches them — ~150 LOC) and eventual-consistency handling. НАСЛІДОК: I spawn ADR-0001 in decision-form, add a §9 row, and the integration shape is locked for the `data-model` stage. HIDDEN: only worth it if you actually need the decoupling — for a single in-process call it's over-engineering."
-  - label: "Synchronous call (→ spawn ADR-0001)"
-    description: "A calls B directly and waits for the result. ПЛЮСИ: simplest to reason about, no extra infrastructure, strong read-after-write. МІНУСИ: A's write fails whenever B is down — couples their availability; couples their deploy lifecycles. НАСЛІДОК: I spawn ADR-0001 with this as the chosen option and the alternatives recorded, add a §9 row. HIDDEN: fine until B becomes slow or flaky, then A inherits B's incidents."
+  - label: "Асинхронні події (Recommended) (→ spawn ADR-0001)"
+    description: "A записує свій рядок і публікує подію; B споживає її у фоні. ПЛЮСИ: B може лежати, не блокуючи записи A — підтримує ціль доступності; модулі деплояться незалежно. МІНУСИ: потрібен механізм доставки подій (таблиця, куди A пише події в тій самій транзакції, плюс воркер, що їх читає й розсилає — ~150 LOC) та обробка eventual-consistency (дані стають узгодженими не миттєво, а з невеликою затримкою). НАСЛІДОК: спавню ADR-0001 у формі рішення, додаю рядок у §9, форма інтеграції фіксується для стадії `data-model`. ПРИХОВАНЕ: варте того лише якщо декаплінг реально потрібен — для одного in-process виклику це over-engineering (зайва складність)."
+  - label: "Синхронний виклик (→ spawn ADR-0001)"
+    description: "A викликає B напряму і чекає результат. ПЛЮСИ: найпростіше для розуміння, без додаткової інфраструктури, строге read-after-write (читання одразу бачить щойно записане). МІНУСИ: запис A падає щоразу, коли B недоступний — зв'язує їхню доступність; зв'язує їхні цикли деплою. НАСЛІДОК: спавню ADR-0001 із цим варіантом як обраним і альтернативами занотованими, додаю рядок у §9. ПРИХОВАНЕ: нормально, доки B не стане повільним або нестабільним — тоді A успадковує інциденти B."
   - label: "Винести у відкрите питання"
-    description: "I remove this decision from §4 and add a §11 Risks row «Open architectural decision: module integration — Open question — Resolve before `data-model` — owner: <you>». I ask you for owner + due next. Without both it becomes Drop. No ADR — a defer is not an accepted decision."
+    description: "Прибираю це рішення з §4 і додаю рядок у §11 Risks: «Відкрите архітектурне рішення: інтеграція модулів — Open question — Resolve before `data-model` — owner: <ти>». Далі питаю owner + due. Без обох рішення стає Drop. Без ADR — відкладене рішення не є прийнятим."
   - label: "Викинути і переформулювати"
-    description: "I discard this option set and ask again with a reframed set (e.g. only the synchronous variants if you ruled out async). Use this when the set is missing a dimension you care about. This decision is mandatory, so a second drop escalates to Save-as-OQ with a suggested owner."
+    description: "Відкидаю цей набір опцій і питаю ще раз з переформульованим набором (наприклад, лише синхронні варіанти, якщо ти відкинув асинхронний). Використовуй це, коли набору бракує виміру, який для тебе важливий. Це рішення обов'язкове, тож другий Drop ескалує у Save-as-OQ із запропонованим owner."
 ```
 
 ## Blast-radius gate (after an Approve, on a 1-of-3 borderline)
@@ -31,17 +31,17 @@ When the gate scores **2+**, spawn the ADR without asking. Only on a **1-of-3 bo
 
 ```
 Question:
-  Blast-radius check after you approved «<chosen option>».
-  CONTEXT: this scored 1 of 3 — it has legitimate alternatives but is reversible and stays
-  inside one module. We're deciding whether it still deserves its own ADR file.
-  WHY IT MATTERS: ADRs are for decisions worth re-reading in six months; over-ADR-ing dilutes
-  the genre, under-ADR-ing loses the «why». Read the options.
+  Перевірка blast-radius після того, як ти прийняв «<обраний варіант>».
+  CONTEXT: набрано 1 з 3 — є легітимні альтернативи, але рішення зворотне і лишається в межах
+  одного модуля. Вирішуємо, чи все ж заслуговує на окремий файл ADR.
+  WHY IT MATTERS: ADR — для рішень, які варто перечитати через півроку; надмірне ADR-ування
+  розмиває жанр, недостатнє — втрачає «чому». Прочитай варіанти.
 
 Options:
   - label: "Зафіксувати як ADR"
-    description: "I create adr/NNNN-<decision-in-kebab>.md from the options you saw (including the rejected ones) + your rationale, Status Accepted, and add a §9 row. The file ships in this section's commit (or its batch on quick+easy). Pick this if the choice felt genuinely contestable."
+    description: "Створюю adr/NNNN-<decision-in-kebab>.md з варіантів, які ти бачив (включно з відкинутими) + твоїм обґрунтуванням, Status Accepted, додаю рядок у §9. Файл іде в коміт цієї секції (або в її батч на quick+easy). Обирай це, якщо рішення справді було дискусійним."
   - label: "Лишити inline"
-    description: "I write the decision into the section body with a one-line rationale, no ADR file. Pick this when the choice is small-blast-radius despite having alternatives — typical for §8 crosscutting or a §5 internal-layout call."
+    description: "Записую рішення прямо в тіло секції з одним рядком обґрунтування, без файлу ADR. Обирай це, коли blast-radius рішення малий, попри наявність альтернатив — типово для §8 crosscutting або локального рішення в §5."
 ```
 
 ## Save-as-OQ follow-up (capture owner + due)
@@ -50,13 +50,13 @@ Fired immediately after any section resolves to Save-as-OQ:
 
 ```
 Question:
-  The decision is migrating to §11 Open Decisions. Provide an owner and a due — a date
-  (YYYY-MM-DD) or a stage trigger like «before `tasks`». Both are mandatory; without both
-  this becomes a Drop and leaves nothing in §11.
+  Рішення переноситься в §11 Open Decisions. Вкажи owner і due — дату (YYYY-MM-DD) або
+  тригер-стадію на кшталт «before `tasks`». Обидва поля обов'язкові; без обох рішення стає
+  Drop і в §11 нічого не лишається.
 
 Options:
   - label: "Вказати owner + due"
-    description: "You type «owner: <name/role>, due: <date or stage>» in one line; I write it into the §11 row (severity = Open question) so the deferred decision stays recoverable until that trigger."
+    description: "Ти пишеш «owner: <ім'я/роль>, due: <дата або стадія>» одним рядком; я записую це у рядок §11 (severity = Open question), щоб відкладене рішення лишалось відновлюваним до цього тригера."
   - label: "Скасувати — Drop замість цього"
-    description: "I abandon the OQ migration and apply Drop — the decision is removed from its section and no §11 row is created. The edits-log records it as a drop."
+    description: "Скасовую перенесення в OQ і застосовую Drop — рішення прибирається з секції, рядок у §11 не створюється. Edits-log фіксує це як drop."
 ```

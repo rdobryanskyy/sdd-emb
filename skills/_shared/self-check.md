@@ -11,7 +11,7 @@
 
 Кожен скіл перед хендофом перевіряє власний артефакт **з диска** за іменованим чеклістом.
 Знайшов проблему → виправив і перевірив ще раз (максимум 2 цикли). Не зміг виправити →
-чесно каже користувачу, ніколи мовчки. Результат — один рядок у хендофі: «self-check: 6/6 pass».
+чесно каже користувачу, ніколи мовчки. Результат — один рядок у хендофі: «самоперевірка: 6/6 пройдено».
 Скіли з важкими верифікаторами (critic, reviewer, drift-check, mermaid-check, GATE) не дублюють
 роботу — їхній верифікатор і **є** self-check; вони додають лише структурні пункти, які він не покриває.
 
@@ -29,8 +29,9 @@
 4. **Surface the unresolved — never silently.** Anything still failing is reported to the user with
    the item name and what was tried. Silently committing a failing artifact is the one forbidden
    move; a stated failure is acceptable, a hidden one is not.
-5. **Report in the handoff.** *What I did* carries one line: «self-check: 6/6 pass» (or
-   «self-check: 5/6 — <failing item> unresolved, see above»).
+5. **Report in the handoff.** *Що я зробив* carries one line, in Ukrainian per
+   [`chat-language.md`](./chat-language.md): «самоперевірка: 6/6 пройдено» (or «самоперевірка: 5/6 —
+   <failing item> не вирішено, див. вище»).
 
 ## Heavy verifiers count (no double work)
 
@@ -51,7 +52,7 @@ in one literal sentence («<verifier> = this skill's structural self-check»).
   didn't land the way the conversation assumed.
 - **Endless fix loops.** Two cycles, then surface. A checklist that can't converge in two fixes is
   flagging a real problem the user must see.
-- **A silent pass.** The handoff line is mandatory even when everything passes — «self-check: 6/6
-  pass» is one line of proof, not noise.
+- **A silent pass.** The handoff line is mandatory even when everything passes — «самоперевірка: 6/6
+  пройдено» is one line of proof, not noise.
 - **Duplicating the heavy verifier.** If the critic already checked cross-section drift, the
   checklist doesn't re-check it — only the structural leftovers.

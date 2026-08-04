@@ -2,7 +2,7 @@
 
 ## Hard gate
 
-`docs/features/<slug>/tasks.json` must exist and parse as JSON. Missing or malformed → refuse: «run `tasks <slug>` first (it emits tasks.json)». Do not try to reconstruct tasks from the markdown — `tasks.json` is the contract.
+`docs/features/<slug>/tasks.json` must exist and parse as JSON. Missing or malformed → refuse: «спершу запусти `tasks <slug>` (він створює `tasks.json`)». Do not try to reconstruct tasks from the markdown — `tasks.json` is the contract.
 
 ## Validate the contract
 

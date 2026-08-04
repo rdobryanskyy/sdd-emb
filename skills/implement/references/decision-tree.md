@@ -42,7 +42,7 @@ else:
 
 | Condition | Action |
 |---|---|
-| `team_mode: true` but `parallel_eligible` is false | Warn («team needs ≥2 parallel tasks and M+/≥4 tasks; this feature has <…>») and **downgrade** to the next applicable mode (workflow if eligible, else sequential). |
+| `team_mode: true` but `parallel_eligible` is false | Warn («команді потрібно ≥2 паралельних задачі та M+/≥4 задачі; у цій фічі <…>») and **downgrade** to the next applicable mode (workflow if eligible, else sequential). |
 | `max_parallel_agents > 1` and `isolation: inplace` | Clamp parallelism to 1 (two agents must never edit one working tree). Effectively sequential. |
 | `workflow_mode: off` | Never generate a Workflow, regardless of eligibility. |
 | `Workflow` tool not available at runtime | Skip the workflow branch; fall through to team (if eligible) or sequential. Graceful degrade — never error. |
@@ -54,7 +54,7 @@ else:
 
 ## Banner (step 7)
 
-After the tree + guards resolve, print exactly what will happen, e.g.:
+After the tree + guards resolve, print exactly what will happen, introduced by a short Ukrainian lead-in sentence (e.g. "Активний режим:") — the banner block itself keeps its `key = value` lines as literal English/lowercase tokens (frontmatter-like, not prose), per [`../../_shared/chat-language.md`](../../_shared/chat-language.md), e.g.:
 
 ```
 SDD implement — feature: notification-preferences

@@ -51,8 +51,8 @@ The developer running the session. No artifact is produced — this is a connect
 1. **Gate on opt-in.** Read `.claude/sdd-emb.local.md`.
    - **Absent** → the dashboard is opt-in and off by default. Auto-create the file with the documented
      defaults per [`../implement/references/settings.md`](../implement/references/settings.md) (which
-     include `dashboard_enabled: false` + `dashboard_port: 4178`), then tell the user: «The dashboard is
-     opt-in — set `dashboard_enabled: true` in `.claude/sdd-emb.local.md` and re-run `/sdd-emb:start`.» **Stop.**
+     include `dashboard_enabled: false` + `dashboard_port: 4178`), then tell the user: «Дашборд — опційний:
+     встанови `dashboard_enabled: true` у `.claude/sdd-emb.local.md` і перезапусти `/sdd-emb:start`.» **Stop.**
    - **Present, `dashboard_enabled` not `true`** → print the same one-line enable instruction and **stop**.
      (Pure-markdown users are unaffected.)
 2. **Read the URL file (the common, channel-free path).** Read `~/.claude/sdd-emb-dashboard/current.url`
@@ -62,28 +62,29 @@ The developer running the session. No artifact is produced — this is a connect
      project dir, if it differs from the current project — that would mean another session's server is
      bound; tell the user rather than guessing.)
    - **Absent** → the server is connected but idle (it couldn't resolve the project at boot). Continue to step 3.
-3. **(Fallback) check Bun + the MCP server.** Run `bun --version`; if Bun is missing, print «The dashboard
-   needs Bun — install from https://bun.sh, then re-run `/sdd-emb:start`. The markdown skills work without it.»
-   and **stop**. If the `dashboard_handshake` tool is unavailable, tell the user to check `/mcp` (the
-   `sdd-emb-dashboard` server may have failed to boot — Bun missing, or `.mcp.json` not picked up; re-open the
-   session) and **stop**.
+3. **(Fallback) check Bun + the MCP server.** Run `bun --version`; if Bun is missing, print «Дашборду
+   потрібен Bun — встанови з https://bun.sh, потім перезапусти `/sdd-emb:start`. Markdown-скіли працюють і без нього.»
+   and **stop**. If the `dashboard_handshake` tool is unavailable, tell the user: «сервер `sdd-emb-dashboard`,
+   можливо, не запустився — перевір `/mcp` (немає Bun, або `.mcp.json` не підхопився); перевідкрий сесію.»
+   and **stop**.
 4. **(Fallback) hand the project over.** Determine the absolute project root — prefer
    `git rev-parse --show-toplevel`; fall back to the cwd that contains `docs/` or `.git`. Call
    **`dashboard_handshake`** with `project_dir` set to that path. It binds HTTP, writes
    `current.url`, and returns the URL. Use the returned URL.
 5. **Print the URL + how it behaves.** Show the URL prominently
    (`http://127.0.0.1:<port>/?session=<id>&token=<cap>`) and offer to open it. Then state the
-   **load-bearing UX truth** so the user isn't surprised:
-   - The dashboard is a **driver + observer**, not a synchronous remote control.
-   - A click is consumed **only while this session is idle at the prompt**; mid-task it **queues**.
-   - Dashboard-driven runs default to **`--depth=easy`** (the skill self-decides reversible calls and
-     asks far fewer questions) because the browser can't answer a blocking `AskUserQuestion`; if a stage
-     genuinely needs a decision, it surfaces in **this terminal** — answer it here.
+   **load-bearing UX truth** so the user isn't surprised — tell the user:
+   - «Дашборд — це **привід + спостерігач**, а не синхронний пульт дистанційного керування.»
+   - «Клік обробляється **тільки поки ця сесія вільна на промпті**; посеред задачі він **стає в чергу**.»
+   - «Запуски з дашборда за замовчуванням йдуть на **`--depth=easy`** (скіл сам вирішує оборотні
+     виклики й ставить значно менше питань), бо браузер не може відповісти на блокуюче
+     `AskUserQuestion`; якщо стадії справді потрібне рішення, воно зʼявиться **ось у цьому терміналі** —
+     відповідай тут.»
 6. **Handoff.** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
-   (utility variant) — *What I did* (printed the dashboard URL) + *Review* (open the URL; the dashboard
-   mirrors `docs/features/` and the session activity pane streams runs) + *Run next* (open the dashboard
-   and click **Run next stage** on a feature, or run a backbone command here, e.g. `/sdd-emb:specify <slug>`).
-   `/clear` is **optional** for this utility.
+   (utility variant) — *Що я зробив* (printed the dashboard URL) + *Перевір перед тим як продовжити*
+   (open the URL; the dashboard mirrors `docs/features/` and the session activity pane streams runs) +
+   *Що далі* (open the dashboard and click **Run next stage** on a feature, or run a backbone command
+   here, e.g. `/sdd-emb:specify <slug>`). `/clear` is **optional** for this utility.
 
 ## Definition of Done
 

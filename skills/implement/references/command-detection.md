@@ -21,7 +21,7 @@ Resolve four commands — **unit test**, **integration test**, **lint**, **vet/t
 
 ## Reporting
 
-After detection, print a block like:
+After detection, print a block like — introduced by a short Ukrainian lead-in sentence (e.g. "Виявлені команди:"); the `detected commands:` block itself and its `key = value` lines stay literal English/lowercase tokens, per [`../../_shared/chat-language.md`](../../_shared/chat-language.md):
 
 ```
 detected commands:

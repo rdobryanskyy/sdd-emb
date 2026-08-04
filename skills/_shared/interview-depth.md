@@ -30,7 +30,10 @@ A consuming skill resolves the level once, at the top of its run, in this preced
 
 `interview_depth` is a **plugin-wide** setting (documented with the rest in [`../implement/references/settings.md`](../implement/references/settings.md)), not implement-only. The settings file is **auto-created with documented defaults the first time a skill needs it** — normally `specify` at the start of the backbone — so later Q&A skills read a real file; a reader that still finds it missing defaults the question to medium. There is **no hard dependency** on `implement` having run first (the auto-create is the same documented template wherever it fires).
 
-The opening question is also where the skill states what the level will *do* to this run («easy → I'll decide the reversible calls myself and list my assumptions; hard → I'll walk every decision and run the full analysis suite»), so the user picks with eyes open.
+The opening question is also where the skill states what the level will *do* to this run — in
+Ukrainian, per [`chat-language.md`](./chat-language.md) — («easy → сам вирішу оборотні виклики і
+перелічу свої припущення; hard → пройду кожне рішення і запущу повний набір аналізів»), so the
+user picks with eyes open.
 
 ## What each level governs (the four axes)
 

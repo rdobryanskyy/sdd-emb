@@ -28,7 +28,9 @@ scope. The boundary: this is an interview about the *idea*, not codebase archaeo
 user to articulate the idea in words first. Consult files only if the user explicitly invites
 it; default is interview-first, no unprompted grep/find/read.
 
-**Language.** Respond in the user's language; the instructions here are English for clarity.
+**Language.** Everything you say to the user — every phase's narration, the final summary — is
+Ukrainian; the instructions in this file are English for whoever maintains this skill, unaffected.
+Full rule → [`../_shared/chat-language.md`](../_shared/chat-language.md).
 
 The depth dial and the Socratic posture are SDD-wide:
 → [`../_shared/interview-depth.md`](../_shared/interview-depth.md) · [`../_shared/ask-style.md`](../_shared/ask-style.md)
@@ -88,24 +90,26 @@ strongest bet, with reasoning in `description`.
 
 ## Final summary (plain text, not AskUserQuestion)
 
-≤4 questions → **mini**; ≥5 → **full**.
+≤4 questions → **mini**; ≥5 → **full**. Writes no file — this block is 100% chat output, so per
+[`../_shared/chat-language.md`](../_shared/chat-language.md) it's written in Ukrainian, headings
+included (nothing on disk parses these headings back).
 
-**Mini:** Revised idea (one sentence) · Weakest spot (one sentence) · Next action (one verb).
+**Mini:** Переглянута ідея (одне речення) · Найслабше місце (одне речення) · Наступна дія (одне дієслово).
 
 **Full:**
 ```md
-## Revised idea
+## Переглянута ідея
 {one paragraph — the idea after the interview}
 
-## What surfaced
-- **Hidden assumptions**: …
-- **Main tradeoff**: …
-- **Weakest spot**: …
+## Що виявилось
+- **Приховані припущення**: …
+- **Головний компроміс**: …
+- **Найслабше місце**: …
 
-## Alternative angles
+## Альтернативні кути
 1. {strongest} 2. {second} 3. {the one they wouldn't have reached alone}
 
-## Next step
+## Наступний крок
 {one concrete verb — usually "/sdd-emb:specify <slug>" once the idea survives}
 ```
 
@@ -117,10 +121,10 @@ interview writes **no files** — it sharpens the idea in the user's head, so th
 checked against its mini/full format is this skill's **structural self-check**
 ([`../_shared/self-check.md`](../_shared/self-check.md)) — nothing on disk to re-read. After the
 summary, **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
-(utility variant — `/clear` optional): *What I did* (the revised idea + its weakest spot) + *Review*
-(nothing on disk — the summary above is the artifact) + *Run next*: when the idea is a feature
+(utility variant — `/clear` optional): *Що я зробив* (the revised idea + its weakest spot) + *Перевір*
+(nothing on disk — the summary above is the artifact) + *Що далі*: when the idea is a feature
 you intend to build, `/sdd-emb:specify <slug>` turns the survivor into a spec; otherwise resume
-whatever you were doing. Never end on a bare «Next: …».
+whatever you were doing. Never end on a bare «Далі: …».
 
 ## Anti-patterns
 

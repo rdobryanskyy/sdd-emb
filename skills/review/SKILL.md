@@ -27,7 +27,7 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
 ## Inputs
 
 - `<slug>` — feature slug.
-- **Gate (hard refuse):** an implemented change must exist (commits on the feature branch, or a non-empty working diff). Nothing to review → «run `implement <slug>` first».
+- **Gate (hard refuse):** an implemented change must exist (commits on the feature branch, or a non-empty working diff). Nothing to review → «спочатку запусти `implement <slug>`».
 - Read for the review baseline — the **whole AC chain**, so the trace can be checked end-to-end: `docs/features/<slug>/spec.md` §5 (the full AC set — the source of truth, not the diff's trailers), `sad.md` §6 (the sequence flows/branches each AC should appear in), `data-model.md` / `contracts/openapi.yaml` / Accepted `adr/` (the contracts the code must honour), `test-plan.md` (the AC→test map, if a separate file), and `tasks.json` (which AC each task claimed).
 - **Conditional embroidery input:** if the feature/diff concerns machine embroidery, include `embroidery domain overlay: active` in the reviewer prompt and name the applicable machine profile, format, design path, and only the relevant `docs/domain/embroidery/*.md`. For a change that creates/mutates a stitch plan or exported file, also read the matching `embroidery-qa` report and export round-trip report when present; without that evidence, the physical output is not production-ready.
 
@@ -38,7 +38,7 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
 3. **Collect cited findings.** Each finding cites `file:line` + the AC/contract it touches. Drop uncited findings (per the critic discipline). A clean review returns `REVIEW_CLEAN`. If the reviewer ran asynchronously and came back as an idle/completion signal with no report, **pull the full report through the host's messaging channel** — never accept a verdict without its text (→ [`../_shared/agent-roster.md`](../_shared/agent-roster.md), shared-contract point 2).
 4. **Resolve each finding with the user** via `AskUserQuestion`: **Fix now** (hand the actionable finding back to `implement`/the author as a follow-up task — re-enter the TDD loop for it) / **Defer** (record in spec §8 Open questions with owner + due) / **Not an issue** (the reviewer misread; record why). Never ship an unresolved stage-1 (AC) finding.
 5. **Write the review record.** `docs/features/<slug>/_review/review-<date>.md`: scope (diff stat), findings with verdicts, and the gate result (`PASS` / `CHANGES REQUESTED`).
-6. **Verdict + next.** Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`_review/review-<date>.md`) + *Run next*: `PASS` → (`/clear`, then `/sdd-emb:ship <slug>`); `CHANGES REQUESTED` → `/sdd-emb:implement <slug>` for the fixes (**no `/clear`** — stay in context to iterate), then re-review the changed surface.
+6. **Verdict + next.** Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *Що я зробив* + *Перевір перед тим як продовжити* (`_review/review-<date>.md`) + *Що далі*: `PASS` → (`/clear`, then `/sdd-emb:ship <slug>`); `CHANGES REQUESTED` → `/sdd-emb:implement <slug>` for the fixes (**no `/clear`** — stay in context to iterate), then re-review the changed surface.
 
 ## Definition of Done
 

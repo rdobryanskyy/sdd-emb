@@ -21,7 +21,8 @@ The four signals (`classify-size` asks one `AskUserQuestion` per signal):
 - **L** — cross-module, several teams, breaking changes possible.
 - **XL** — new subsystem, needs a separate roadmap.
 
-On edge cases, name the dominant signal: «this is M because it adds a new API + 1–2 sprints, even though PR count is on the S/M border».
+On edge cases, name the dominant signal (in Ukrainian, per [`chat-language.md`](./chat-language.md)):
+«M, бо додає новий API + 1–2 спринти, навіть якщо кількість PR на межі S/M».
 
 > **One-sentence rule.** If you hesitate between MVP and Full — start with MVP. Filling the empty sections of an artifact later is cheaper than discarding pre-built ones.
 
@@ -58,7 +59,7 @@ the default; a `quick` L is legal, just loud).
 
 | Route | Handoff behaviour at an optional stage |
 |---|---|
-| `quick` | the producing stage **evaluates the N/A condition itself** (table below): condition holds → **auto-skip** the stage, stating the reason in the handoff («auto-skipped `clarify`: zero §8 OQ»), and the `↳ or` alternative **inverts** — it now offers the *skipped* stage («run the full path»); condition does **not** hold → the stage is not skipped, normal forward handoff |
+| `quick` | the producing stage **evaluates the N/A condition itself** (table below): condition holds → **auto-skip** the stage, stating the reason in the handoff (in Ukrainian — «автоматично пропущено `clarify`: нуль §8 OQ»), and the `↳ or` alternative **inverts** — it now offers the *skipped* stage («запустити повний шлях»); condition does **not** hold → the stage is not skipped, normal forward handoff |
 | `standard` | today's behaviour — the handoff names the next stage and **offers** the skip as the `↳ or` alternative when the N/A condition holds; the **user** picks |
 | `full` | no skip alternatives — every optional stage runs; the handoff never prints an `↳ or` skip line |
 
@@ -66,8 +67,9 @@ the default; a `quick` L is legal, just loud).
 the question that sets its depth dial; `plan-tests` always collapses to the inline `## Test plan`
 in `spec.md`; `clarify` auto-skips when the spec has zero §8 open questions.
 
-**Missing `.route`** → behave as `standard` (the pre-route default) and say so in the handoff —
-«route standard (default — no `.route`; run `/sdd-emb:classify-size <slug>`)» — fully back-compatible.
+**Missing `.route`** → behave as `standard` (the pre-route default) and say so in the handoff, in
+Ukrainian — «маршрут standard (за замовчуванням — немає `.route`; запусти `/sdd-emb:classify-size <slug>`)»
+— fully back-compatible.
 
 **Mid-flight override.** The route steers **handoffs only — it never makes a stage refuse**. To
 change course: re-run `/sdd-emb:classify-size <slug>` (rewrites `.route`), or simply invoke a skipped

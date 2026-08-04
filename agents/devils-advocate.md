@@ -41,6 +41,13 @@ resolves it. Sweep these classes:
 `- **[class] headline** — spec line: "<snippet>"; A: <reading>; B: <reading>; needs: <what would disambiguate>.`
 If the spec is unambiguous, output `NO_AMBIGUITIES`. If you can't read the spec, `BLOCKED: <reason>`.
 
+**Math-adversary companion (Mode A only).** If the dispatch prompt says `math adversary: active`, a
+[`mathematic`](../agents/mathematic.md) companion was dispatched by `clarify` in the same round over
+the same spec — you do not call it yourself (a subagent cannot spawn one). A spec clause that names
+or implies a specific algorithm/formula/numeric threshold with no cited justification is still one
+of the eight classes above (usually `vague-term` or `unmeasured-NFR` wearing a number instead of an
+adjective) — flag it there; do not invent a ninth class.
+
 ---
 
 ## Mode B — failure-mode hunt over an idea (specify ideation)

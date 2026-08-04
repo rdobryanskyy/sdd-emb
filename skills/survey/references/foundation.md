@@ -9,9 +9,9 @@ once, then meet them there.
 
 Open with a single `AskUserQuestion` that gauges how the user wants to engage (and implicitly their level). Phrase it warmly, per [`../../_shared/ask-style.md`](../../_shared/ask-style.md):
 
-- **«Pick good defaults, I'll confirm»** → *guided-default* depth: propose a complete coherent foundation, ask **one** confirm, explain each piece in plain language. Best for a first-timer / non-engineer / "just get me going".
-- **«Walk me through each choice with explanations»** → *guided-explained* depth: one question per major choice, each option glossed (no jargon without a plain-words explanation). Best for a junior who wants to learn the why.
-- **«Let me choose each piece, keep it terse»** → *expert* depth: offer the choices without the long explanations, accept overrides freely. Best for a senior.
+- **«обери гарні дефолти, я підтверджу»** → *guided-default* depth: propose a complete coherent foundation, ask **one** confirm, explain each piece in plain language. Best for a first-timer / non-engineer / "just get me going".
+- **«проведи мене через кожен вибір з поясненнями»** → *guided-explained* depth: one question per major choice, each option glossed (no jargon without a plain-words explanation). Best for a junior who wants to learn the why.
+- **«дай мені вибрати кожен пункт самому, коротко»** → *expert* depth: offer the choices without the long explanations, accept overrides freely. Best for a senior.
 
 Calibration governs **depth + phrasing**, not the set of decisions — the same foundation gets fixed either way. Default to *guided-default* if the answer is ambiguous (over-explaining is cheaper than overwhelming).
 

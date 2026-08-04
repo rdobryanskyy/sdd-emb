@@ -32,6 +32,14 @@ presented as a hard machine limit; a required machine profile, format, unit, or 
 path missing from a feature that depends on it; or a contract that contradicts the cited domain
 source. Do not invent a threshold or digitizing decision.
 
+**Math-adversary companion.** If the dispatch prompt says `math adversary: active`, a
+[`mathematic`](../agents/mathematic.md) companion was dispatched by the skill in the same round over
+the same draft — you do not call it yourself (a subagent cannot spawn one). When its report is
+inlined in your prompt, fold its cited findings into F6 (an unjustified algorithm/constant is a
+constraint/quality leak like any other) or into F1 if it contradicts a §4/§2 committed approach.
+Cite both the draft location and the inlined `mathematic` finding — never re-derive the mathematical
+judgment yourself, that is its job, not yours.
+
 ## Discipline (HIGH tier — correctness)
 
 - **Cite or drop.** Every finding cites ≥1 draft location AND ≥1 upstream location. An uncited finding is invalid.

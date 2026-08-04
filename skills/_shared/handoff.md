@@ -2,21 +2,27 @@
 
 > **Reference-only.** Not a skill. **Every** skill ends by emitting the handoff block defined here —
 > as its **last output**, after it has proposed its commit. The format lives only in this file; each
-> skill keeps a one-line pointer and supplies its own *What I did* / *Review* / *next command*. This
-> exists because a bare «Next: …» line is hard to act on — the user can't tell what changed, which
-> files to open, or what to run next without scrolling back.
+> skill keeps a one-line pointer and supplies its own *Що я зробив* / *Перевір перед тим як
+> продовжити* / *next command*. This exists because a bare «Далі: …» line is hard to act on — the
+> user can't tell what changed, which files to open, or what to run next without scrolling back.
 
 Running under Codex CLI or Cursor? The `/clear` and `/sdd-emb:<next>` forms map to the host tool's
 equivalents per [`tool-adapters.md`](./tool-adapters.md).
+
+> **Language.** The block below is printed straight to the user, so per
+> [`chat-language.md`](./chat-language.md) its prose is always Ukrainian — that's why the template
+> skeleton in *The block (sectioned format)* is written in Ukrainian. Commands, file paths, and
+> slugs inside it stay verbatim. The rest of *this file* (the rules that follow) is instructional
+> prose for whoever writes a skill and stays English.
 
 ## TL;DR (короткий вступ українською)
 
 Кожен крок (skill) наприкінці **завжди** друкує однаковий хендоф-блок із трьох секцій:
 
-1. **What I did** — що стадія зробила + який коміт запропонувала (не змушуй гортати вгору).
-2. **Review before continuing** — посилання на файли, які стадія створила/змінила і які треба
+1. **Що я зробив** — що стадія зробила + який коміт запропонувала (не змушуй гортати вгору).
+2. **Перевір перед тим як продовжити** — посилання на файли, які стадія створила/змінила і які треба
    глянути на цьому геті (реальні `docs/features/<slug>/…` шляхи — клікабельні/копіювані).
-3. **Run next** — спершу `/clear` (обов'язково для forward-переходу — наступна стадія перечитує
+3. **Що далі** — спершу `/clear` (обов'язково для forward-переходу — наступна стадія перечитує
    все з диска), потім наступна команда `/sdd-emb:<next> <slug>` у **fenced-блоці** (копіюється в один
    клік) + альтернатива-пропуск, якщо вона є.
 
@@ -29,41 +35,41 @@ equivalents per [`tool-adapters.md`](./tool-adapters.md).
 ```md
 ## ✅ <skill> — <slug>
 
-**What I did**
-- <1–3 bullets: the artifact(s) produced/changed + the commit proposed>
+**Що я зробив**
+- <1–3 пункти: який(і) артефакт(и) створено/змінено + який коміт запропоновано>
 
-**Review before continuing**
-- `docs/features/<slug>/<file>` — <what to check here>
+**Перевір перед тим як продовжити**
+- `docs/features/<slug>/<file>` — <що тут перевірити>
 - `docs/features/<slug>/<file2>` — <…>
 
-**Run next**
-1. `/clear` — mandatory (fresh context; the next stage re-reads its inputs from disk)
-2. then run:
+**Що далі**
+1. `/clear` — обов'язково (чистий контекст; наступна стадія перечитує все з диска)
+2. потім запусти:
    ```
    /sdd-emb:<next> <slug>
    ```
-   ↳ or `/sdd-emb:<alt> <slug>` to <skip condition>   ← only when a real skip exists
+   ↳ або `/sdd-emb:<alt> <slug>`, щоб <умова пропуску>   ← лише коли реально є пропуск
 ```
 
 Rules for filling it:
 
 - **Always emit it** as the final output, once per run, after the commit is proposed. Never end a
-  skill on a bare «Next: X».
-- **What I did** — concrete and self-contained: name the files written and the proposed commit
+  skill on a bare «Далі: X».
+- **Що я зробив** — concrete and self-contained: name the files written and the proposed commit
   message, so the user doesn't scroll up to reconstruct it.
-- **State the size + route used.** *What I did* names the `feature_size` AND the route the stage
-  worked at — «size M + route standard (from `.size`/`.route`)»; if the stage had to **default**
-  because a file was missing, say so loudly — «size M (default — no `.size`; run
-  `/sdd-emb:classify-size <slug>`)», «route standard (default — no `.route`)» — so a missing size/route
-  surfaces at this gate, not three stages later. A missing `.route` always means `standard` (the
-  pre-route behaviour — fully back-compatible). (`specify` establishes both at the start, so this
-  should be rare.)
-- **Review before continuing** — list **every artifact this stage wrote or changed**, each as a real
-  `docs/features/<slug>/…` path (or repo-root path like `docs/architecture-map.md`) plus a one-liner
-  on what to eyeball. This *is* the per-gate review checklist.
-- **Run next** — the next command in **`/sdd-emb:<name> <slug>`** form inside a fenced code block (so the
+- **State the size + route used.** *Що я зробив* names the `feature_size` AND the route the stage
+  worked at — «розмір M + маршрут standard (з `.size`/`.route`)»; if the stage had to **default**
+  because a file was missing, say so loudly — «розмір M (за замовчуванням — немає `.size`; запусти
+  `/sdd-emb:classify-size <slug>`)», «маршрут standard (за замовчуванням — немає `.route`)» — so a
+  missing size/route surfaces at this gate, not three stages later. A missing `.route` always means
+  `standard` (the pre-route behaviour — fully back-compatible). (`specify` establishes both at the
+  start, so this should be rare.)
+- **Перевір перед тим як продовжити** — list **every artifact this stage wrote or changed**, each as
+  a real `docs/features/<slug>/…` path (or repo-root path like `docs/architecture-map.md`) plus a
+  one-liner on what to eyeball. This *is* the per-gate review checklist.
+- **Що далі** — the next command in **`/sdd-emb:<name> <slug>`** form inside a fenced code block (so the
   user copies it in one click). `/clear` is step 1 and **mandatory** for a forward backbone handoff.
-  Add a `↳ or …` skip-alternative **only** when one genuinely exists (see the table). The
+  Add a `↳ або …` skip-alternative **only** when one genuinely exists (see the table). The
   skip-alternatives come from the **fast-lane N/A conditions** in [`size-matrix.md`](./size-matrix.md);
   **how each resolves is route-dependent** — auto-skip on `quick`, offered on `standard`,
   suppressed on `full` (see the *Route-resolved forward handoff* variant below).
@@ -74,32 +80,32 @@ Rules for filling it:
 
 - **Backbone forward handoff** (`survey → … → review → ship`): `/clear` mandatory + the next stage.
 - **Route-resolved forward handoff** (a backbone stage whose successor is an *optional* stage —
-  `specify`, `clarify`, `design`, `sequences`, `data-model`, `tasks`): before printing *Run next*,
+  `specify`, `clarify`, `design`, `sequences`, `data-model`, `tasks`): before printing *Що далі*,
   resolve the next stage per `docs/features/<slug>/.route` and the Routes table in
   [`size-matrix.md`](./size-matrix.md):
-  - **`quick`** — evaluate the next optional stage's N/A condition yourself. Holds → *Run next*
-    names the post-skip stage, *What I did* states «auto-skipped `<stage>`: <reason>», and the
-    `↳ or` line **inverts** — it offers the skipped stage («run the full path»). Doesn't hold →
-    normal forward handoff (the stage is not skipped).
-  - **`standard`** — normal forward handoff; add the `↳ or` skip-alternative when the N/A
+  - **`quick`** — evaluate the next optional stage's N/A condition yourself. Holds → *Що далі*
+    names the post-skip stage, *Що я зробив* states «автоматично пропущено `<stage>`: <reason>», and
+    the `↳ або` line **inverts** — it offers the skipped stage («запустити повний шлях»). Doesn't
+    hold → normal forward handoff (the stage is not skipped).
+  - **`standard`** — normal forward handoff; add the `↳ або` skip-alternative when the N/A
     condition holds (the user picks).
-  - **`full`** — normal forward handoff; **never** print an `↳ or` skip line.
+  - **`full`** — normal forward handoff; **never** print an `↳ або` skip line.
   Missing `.route` → `standard`. The route steers handoffs only — a stage invoked directly always
   runs.
 - **Loop-back** (`review → implement` on `CHANGES REQUESTED`): **no `/clear`** — you stay in context
-  to iterate; *Run next* = `/sdd-emb:implement <slug>` (fix), then re-review the changed surface.
-- **Terminal** (`ship`): there is no `/sdd-emb` successor. *Run next* becomes **Done** — the PR command/URL
-  + «merging to main is your call»; still print *What I did* + *Review* (the changelog + PR).
+  to iterate; *Що далі* = `/sdd-emb:implement <slug>` (fix), then re-review the changed surface.
+- **Terminal** (`ship`): there is no `/sdd-emb` successor. *Що далі* becomes **Готово** — the PR command/URL
+  + «мердж у main — твоє рішення»; still print *Що я зробив* + *Перевір* (the changelog + PR).
 - **Utility** (`classify-size`, `glossary`, `decide-adr`, `roadmap`, `fix`): called ad-hoc, not a
-  gate. `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume
-  your backbone stage», naming the likely one (e.g. `/sdd-emb:design <slug>`). Print *What I did* +
-  *Review* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
-  when the fix touched >5 files or crossed a module boundary, *Run next* also offers
+  gate. `/clear` is **optional** (recommend it only if the context is large); *Що далі* = «повернись
+  до своєї backbone-стадії», naming the likely one (e.g. `/sdd-emb:design <slug>`). Print *Що я зробив* +
+  *Перевір* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
+  when the fix touched >5 files or crossed a module boundary, *Що далі* also offers
   `/sdd-emb:review <slug>` (a recommendation, never a gate).
 
 ## Canonical sequence (stage → review-files → next)
 
-| Stage | Review before continuing (files written) | Run next |
+| Stage | Перевір перед тим як продовжити (files written) | Що далі |
 |---|---|---|
 | `survey` | `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) | `/sdd-emb:specify <slug>` |
 | `specify` | `docs/features/<slug>/spec.md` | `/sdd-emb:clarify <slug>` ↳ or `/sdd-emb:design <slug>` (XS/S, zero §8 OQ — fast lane) |

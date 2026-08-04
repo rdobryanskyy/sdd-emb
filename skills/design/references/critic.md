@@ -33,3 +33,7 @@ Three sub-probes — cite the offending line + the upstream source it contradict
 ## F1 specialization — strategic-vector drift
 
 Compare §4 Solution strategy + §1 quality goals against §5–§10. If a §4 choice was Approved/Edited but a later section silently contradicts it (e.g. §4 picks async module coupling but the §6 happy-path flow shows a synchronous call with no emit step; §1's dominant quality goal is availability but every §10 scenario measures only latency), that is drift — cite the §4/§1 commitment + the contradicting draft line.
+
+## Math-adversary companion trigger
+
+Before dispatching this critic, check whether any §4/§5 building block in the drafted `sad.md` commits to a nontrivial algorithm, numerical method, or geometric/statistical pipeline (per [`../../_shared/math-adversary.md`](../../_shared/math-adversary.md)). If so, dispatch [`mathematic`](../../../agents/mathematic.md) in the same round on that section, state `math adversary: active` in both this critic's prompt and mathematic's, and inline mathematic's cited report alongside `{{DRAFT}}` so the critic can fold it into F1/F6 rather than re-deriving the mathematical judgment itself. A confirmed finding that would be expensive to reverse later (the algorithm choice is baked into a module boundary) can itself cross the blast-radius gate into its own ADR.

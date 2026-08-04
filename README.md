@@ -326,23 +326,28 @@ Model is chosen by the **kind of work**, not by taste:
 
 | Kind of work | Model | Effort | Who |
 |---|---|---|---|
-| Judgment (spec, design, review, critique, ambiguity, strategy) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` |
+| Judgment (spec, design, review, critique, ambiguity, strategy, algorithm choice) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` / `mathematic` |
 | Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `test-author`, `implementer` |
 | Research / gathering (+ web) | `sonnet` | `medium` | `researcher` (competitive / adjacent-solution research) |
 | Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `explorer`; data-model, api, sequences, tasks |
 
-The nine agents (`agents/`): **explorer** (brownfield scan), **test-author** (failing tests),
+The ten agents (`agents/`): **explorer** (brownfield scan), **test-author** (failing tests),
 **implementer** (makes them pass), **reviewer** (independent review), **critic**
 (coherence critique), **devils-advocate** (ambiguity + failure-mode hunt), **researcher**
 (competitive / web research), **strategist** (three strategic approaches), **analyst**
-(multi-perspective review) — the read-only ones run in **clean isolated context** (fresh eyes) and
-emit only cited findings. The last three are the **ideation analyses**, dispatched by `specify` and
-gated by the depth dial (easy skips them; hard runs the full suite).
+(multi-perspective review), **mathematic** (mathematical / algorithmic adversary) — the read-only
+ones run in **clean isolated context** (fresh eyes) and emit only cited findings. `researcher` /
+`strategist` / `analyst` are the **ideation analyses**, dispatched by `specify` and gated by the
+depth dial (easy skips them; hard runs the full suite). `mathematic` is routed in wherever a spec/
+design/task/code commits to a nontrivial algorithm or numerical method — as a **companion** to a
+`critic`/`devils-advocate` pass, or a **direct** dispatch — by the calling skill, since a subagent
+can never dispatch another one (details:
+[`skills/_shared/math-adversary.md`](./skills/_shared/math-adversary.md)).
 
 Two policy levers sit on top of the table. **`judgment_model`** (`.claude/sdd-emb.local.md`;
 `opus | fable`) raises **all** judgment agents (`reviewer` / `critic` / `devils-advocate` /
-`strategist` / `analyst`) to the Mythos-tier model in one switch — `agents/*.md` keep their
-tier-alias defaults; a per-role `model_<role>` key still wins. And on **L/XL** features the
+`strategist` / `analyst` / `mathematic`) to the Mythos-tier model in one switch — `agents/*.md` keep
+their tier-alias defaults; a per-role `model_<role>` key still wins. And on **L/XL** features the
 critical verifications — the `reviewer` in `review` and the `critic` in `design`/`specify` — run
 at **`effort: xhigh`** (via `CLAUDE_CODE_EFFORT_LEVEL`); the rest of the judgment work stays `high`.
 
@@ -386,7 +391,7 @@ cmd_vet: ""
 model_test_author: sonnet  # per-role model + effort (see Models, effort & agents)
 model_implementer: sonnet
 model_reviewer: opus
-judgment_model: opus       # opus | fable — one switch for all judgment agents (reviewer/critic/devils-advocate/strategist/analyst)
+judgment_model: opus       # opus | fable — one switch for all judgment agents (reviewer/critic/devils-advocate/strategist/analyst/mathematic)
 effort_test_author: medium # raised to high on escalation / for L-XL features
 effort_implementer: medium
 effort_reviewer: high
@@ -517,9 +522,9 @@ the existing documentation-generation templates follow the unchanged SDD flow.
 .codex-plugin/    Codex CLI plugin manifest (+ .agents/plugins/marketplace.json — its self-marketplace)
 .cursor-plugin/   Cursor plugin manifest (skills/ + agents/ auto-discovered from the root)
 install.sh        Codex CLI / Cursor installer — copies the subtree, prefixes skill names, generates functional agents
-agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
+agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst, mathematic
 scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd-emb: form, handoff block, single-source taxonomy, no _shared orphans)
-skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff / tool-adapters (referenced, not duplicated)
+skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff / tool-adapters / math-adversary (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 .mcp.json         declares the sdd-emb-dashboard MCP server (auto-starts at session open; opt-in via dashboard_enabled)
 server/           the dashboard MCP server (Bun + TypeScript): server.ts (MCP stdio + Bun.serve HTTP/WS), http.ts (routing + gating, testable), state.ts (disk→pipeline derivation), channel.ts (dashboard_* tools + command allowlist), paths.ts (docs/ scoping), frontmatter.ts (shared parser) + tests/ (bun test)

@@ -33,8 +33,8 @@ The digitizer, or whoever signs off before a design goes to production.
 
 - `<design>` — the same slug used across the embroidery-* chain.
 - **Gate (hard-refuse if missing both):** `docs/embroidery/<design>/stitch-plan.json` and any
-  `docs/embroidery/<design>/_export/export-report-*.md`. Neither exists → STOP and point: «run
-  `embroidery-digitize <design>` first — there is nothing to check yet».
+  `docs/embroidery/<design>/_export/export-report-*.md`. Neither exists → STOP and point: «спочатку запусти
+  `embroidery-digitize <design>` — поки що нічого перевіряти».
 - (Expected) `docs/domain/embroidery/machine-constraints.md` — density/jump/hoop/needle-count
   bounds. Absent → run the checks that don't need it (underlay presence, pull-compensation presence,
   hard-ordering respected) and say plainly which checks were skipped and why.
@@ -94,7 +94,7 @@ checked.
 6. **Self-check.** Every finding traces to a region id + a rule + a cited number — an uncited
    finding is dropped before the report is written, the same discipline `reviewer` applies to code.
 7. **Handoff.** Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
-   — *What I did* (verdict + finding count) + *Review* (`qa-report.md`) + *Run next*: `PASS` →
+   — *Що я зробив* (verdict + finding count) + *Перевір перед тим як продовжити* (`qa-report.md`) + *Що далі*: `PASS` →
    production-ready, resume whatever you were doing; `ISSUES-FOUND` → the named upstream skill for
    each finding, then re-run `embroidery-qa <design>`.
 
