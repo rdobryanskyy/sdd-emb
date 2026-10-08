@@ -1,6 +1,12 @@
 # design-specific `AskUserQuestion` shapes
 
-The canonical question/option contract — junior-friendly, bilingual, label = next mechanical step, description = 3–5 sentences with the four mandatory elements — lives in [`../../_shared/ask-style.md`](../../_shared/ask-style.md). Read that first. This file keeps only the **design-specific shapes** that aren't in the shared file: the strategic-decision-with-ADR-spawn, the blast-radius gate, and the Save-as-OQ follow-up. Examples are stack-agnostic — substitute your repo's real names.
+The canonical question/option contract is in [`../../_shared/ask-style.md`](../../_shared/ask-style.md). Read that file first. The contract is:
+
+- junior-friendly and bilingual;
+- label = the next mechanical step;
+- description = 3–5 sentences with the four mandatory elements.
+
+This file keeps only the **design-specific shapes** that are not in the shared file: the strategic-decision-with-ADR-spawn, the blast-radius gate, and the Save-as-OQ follow-up. The examples are stack-agnostic. Use the real names of your repo.
 
 ## Strategic decision (§4) — option labels name the ADR spawn
 
@@ -27,7 +33,7 @@ Options:
 
 ## Blast-radius gate (after an Approve, on a 1-of-3 borderline)
 
-When the gate scores **2+**, spawn the ADR without asking. Only on a **1-of-3 borderline** do you ask:
+When the gate score is **2+**, spawn the ADR and do not ask. Ask only on a **1-of-3 borderline**:
 
 ```
 Question:
@@ -46,7 +52,7 @@ Options:
 
 ## Save-as-OQ follow-up (capture owner + due)
 
-Fired immediately after any section resolves to Save-as-OQ:
+Ask this immediately after a section resolves to Save-as-OQ:
 
 ```
 Question:

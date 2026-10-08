@@ -5,128 +5,137 @@ effort: medium
 agents: []
 description: >
   Use to validate a stitch plan or an exported machine file against domain quality rules before
-  production — density in range, underlay present where needed, pull compensation recorded, hoop
-  fit, jump/trim budget, color-stop count vs. needle count, and lettering-specific minimums when a
-  region is marked small text. Triggers on "check {design} for problems", "QA the stitch plan for
+  production: density in range, underlay where necessary, recorded pull compensation, hoop fit,
+  jump/trim budget, color-stop count against needle count, and lettering minimums when a region is
+  marked as small text. Triggers on "check {design} for problems", "QA the stitch plan for
   {design}", "validate {design} before production", "/sdd-emb:embroidery-qa {design}",
-  "перевір {design} перед виробництвом". Reads docs/embroidery/{design}/stitch-plan.json (or an
-  exported file's export-report.md) plus docs/domain/embroidery/{machine-constraints,
-  stitch-vocabulary}.md, runs a fixed rule set, and writes a cited qa-report.md with a
-  PASS / ISSUES-FOUND verdict — read-only, it never edits the design. Hard-refuses if neither a
-  stitch plan nor an export report exists for the design.
+  "перевір {design} перед виробництвом". Reads docs/embroidery/{design}/stitch-plan.json (or the
+  export-report.md of an exported file) and docs/domain/embroidery/{machine-constraints,
+  stitch-vocabulary}.md. Runs a fixed rule set and writes a cited qa-report.md with a
+  PASS / ISSUES-FOUND verdict. Read-only: it never edits the design. Hard-refuses if the design has
+  no stitch plan and no export report.
 ---
 
 # Skill: embroidery-qa
 
-The read-only quality gate for an embroidery design — the last of the four embroidery capability
-skills. It judges a stitch plan (or an already-exported file, via its `embroidery-export` report)
-against domain physics rules, the same "cite or drop" discipline the `reviewer` agent applies to
-code: every finding names the region, the rule, and the concrete numbers involved, or it's dropped.
-It never edits the design — findings route back to `embroidery-digitize` or `embroidery-optimize` to
-fix.
+This skill is the read-only quality gate for an embroidery design. It is the last of the four
+embroidery capability skills. It judges a stitch plan, or an exported file through its
+`embroidery-export` report, against domain physics rules. It uses the same "cite or drop"
+discipline as the `reviewer` agent for code: each finding names the region, the rule and the
+concrete numbers, or the skill drops it. It never edits the design. The findings go back to
+`embroidery-digitize` or `embroidery-optimize` for the repair.
+
+The chat with the user is in Ukrainian → [`../_shared/chat-language.md`](../_shared/chat-language.md).
+English prose (artifacts and reports) follows ASD-STE100 Simplified Technical English → [`../_shared/ste100.md`](../_shared/ste100.md).
 
 ## Owner
 
-The digitizer, or whoever signs off before a design goes to production.
+The digitizer, or the person who approves a design before it goes to production.
 
 ## Inputs
 
-- `<design>` — the same slug used across the embroidery-* chain.
-- **Gate (hard-refuse if missing both):** `docs/embroidery/<design>/stitch-plan.json` and any
-  `docs/embroidery/<design>/_export/export-report-*.md`. Neither exists → STOP and point: «спочатку запусти
+- `<design>` — the same slug that the embroidery-* chain uses.
+- **Gate (hard-refuse if missing both):** `docs/embroidery/<design>/stitch-plan.json` and each
+  `docs/embroidery/<design>/_export/export-report-*.md`. If neither exists, STOP and show: «спочатку запусти
   `embroidery-digitize <design>` — поки що нічого перевіряти».
-- (Expected) `docs/domain/embroidery/machine-constraints.md` — density/jump/hoop/needle-count
-  bounds. Absent → run the checks that don't need it (underlay presence, pull-compensation presence,
-  hard-ordering respected) and say plainly which checks were skipped and why.
-- (Expected) `docs/domain/embroidery/stitch-vocabulary.md` — lettering/monogram minimums, when a
-  region is marked as small text.
-- (Optional) a target machine profile (needle count, hoop inventory) — if the user names one, check
-  against it; otherwise check against the generic ranges the domain docs give and say so.
+- (Expected) `docs/domain/embroidery/machine-constraints.md` — the density, jump, hoop and
+  needle-count limits. If it is absent, run the checks that do not need it (underlay present, pull
+  compensation present, hard order obeyed). Say clearly which checks you skipped and why.
+- (Expected) `docs/domain/embroidery/stitch-vocabulary.md` — the lettering and monogram minimums,
+  for a region that is marked as small text.
+- (Optional) a target machine profile (needle count, hoop inventory). If the user names one, check
+  against it. If not, check against the generic ranges of the domain documents and say so.
 
 ## Rule set
 
-Each rule below produces a finding only when it fires; a region that passes every applicable rule is
-not mentioned individually — the report's coverage count (§ Definition of Done) proves it was
-checked.
+Each rule below gives a finding only when it fires. The report does not mention each region that
+passes all applicable rules. The coverage count of the report (§ Definition of Done) proves that
+the skill checked it.
 
-1. **Density in range.** A region's density falls within the domain doc's cited range for its stitch
-   type; outside the range → finding, citing the region, the value, and the doc's range.
-2. **Underlay present where needed.** Every satin or fill region has an underlay decision (or an
-   explicit `<!-- N/A: reason -->` from `embroidery-digitize`) — a silent gap is a finding.
-3. **Pull compensation recorded.** Any region dense enough to imply real distortion risk (per the
-   domain doc's guidance) has a non-zero pull-compensation value recorded.
-4. **Hoop fit.** The design's extents (from the stitch plan, or the export report's measured
-   extents) fit within the declared hoop's usable field, not just its nominal size.
-5. **Jump/trim budget.** Total jump count and forced-trim count (from `optimization-report.md` if it
-   exists, else recomputed from the plan) are reported against the domain doc's guidance — flagged
-   only if they're materially higher than what an optimized plan for a design of this size would
-   suggest (a design that skipped `embroidery-optimize` gets a note, not an automatic fail).
-6. **Color-stop vs. needle count.** If a target machine's needle count is known, flag when the
-   design's color-block count exceeds it (a manual re-thread will be required mid-run) — informational,
-   not a hard fail, unless the user stated no manual intervention is acceptable for this run.
-7. **Lettering minimums.** For any region tagged as small text/monogram, check satin-column width,
-   letter height, internal-counter size, and inter-letter spacing against `stitch-vocabulary.md`'s
-   cited ranges.
-8. **Format round-trip (if an export report exists).** Surface any `embroidery-export` round-trip
-   mismatch as a QA finding too — a design isn't production-ready with a failed round-trip, even if
-   every other rule passes.
+1. **Density in range.** The density of a region is in the cited range of the domain document for
+   its stitch type. If it is outside the range, give a finding. Cite the region, the value and the
+   range of the document.
+2. **Underlay present where needed.** Each satin or fill region has an underlay decision, or an
+   explicit `<!-- N/A: reason -->` from `embroidery-digitize`. A silent gap is a finding.
+3. **Pull compensation recorded.** Each region with a density that causes a real distortion risk
+   (per the guidance of the domain document) has a recorded pull-compensation value that is not zero.
+4. **Hoop fit.** The extents of the design (from the stitch plan, or the measured extents of the
+   export report) fit in the usable field of the declared hoop, not only in its nominal size.
+5. **Jump/trim budget.** Report the total jump count and the forced-trim count against the guidance
+   of the domain document. Use `optimization-report.md` if it exists. If not, calculate them again
+   from the plan. Flag them only if they are much higher than an optimized plan for a design of this
+   size. A design that did not go through `embroidery-optimize` gets a note, not an automatic fail.
+6. **Color-stop vs. needle count.** If the needle count of the target machine is known, flag a
+   design with more color blocks than needles. A manual re-thread will be necessary during the run.
+   This is informational, not a hard fail. It is a hard fail only if the user stated that no manual
+   work is acceptable for this run.
+7. **Lettering minimums.** For each region tagged as small text or monogram, check the satin-column
+   width, the letter height, the internal-counter size and the space between letters. Compare them
+   with the cited ranges in `stitch-vocabulary.md`.
+8. **Format round-trip (if an export report exists).** Also show each round-trip mismatch from
+   `embroidery-export` as a QA finding. A design with a failed round-trip is not production-ready,
+   also if it passes all other rules.
 
 ## Protocol
 
-1. **Gate.** Confirm at least one of `stitch-plan.json` / an `_export/export-report-*.md` exists;
-   refuse with the pointer above if neither does. Read whichever domain docs are present; note which
-   rules above will run in **skipped** mode due to a missing doc.
-2. **Run every applicable rule** from the Rule set against the plan (and the export report, if
-   present). For each finding: cite the region id, the rule number, the actual value, and the
-   doc-cited threshold/range it's being checked against.
-3. **Classify severity.** `blocks-production` (a hard format/machine violation, e.g. a stitch over
-   the format's length limit slipped through, or a failed round-trip), `warning` (a domain-guidance
-   range violation — density, lettering minimums, hoop fit), `informational` (needle-count re-thread
-   note, an un-optimized jump count).
-4. **Write the report.** [`./templates/qa-report.md`](./templates/qa-report.md) →
-   `docs/embroidery/<design>/_qa/qa-report-<date>.md`: every finding cited per the rule set, the
-   rules that ran in skipped mode and why, and a closing verdict.
-5. **Verdict.** `PASS` — zero `blocks-production` findings (warnings/informational may still be
-   listed, with the user's acknowledgement noted). `ISSUES-FOUND` — at least one `blocks-production`
-   finding; name which upstream skill (`embroidery-digitize` for a content fix,
-   `embroidery-optimize` for a sequencing fix, `embroidery-export` for a re-export) should address
-   each one.
-6. **Self-check.** Every finding traces to a region id + a rule + a cited number — an uncited
-   finding is dropped before the report is written, the same discipline `reviewer` applies to code.
+1. **Gate.** Make sure that `stitch-plan.json` or an `_export/export-report-*.md` exists. If
+   neither exists, refuse with the message above. Read the domain documents that are present. Note
+   which rules above will run in **skipped** mode because a document is missing.
+2. **Run each applicable rule** from the Rule set against the plan (and the export report, if it is
+   present). For each finding, cite the region id, the rule number, the actual value, and the
+   threshold or range from the document.
+3. **Classify the severity.**
+   - `blocks-production`: a hard format or machine violation. Examples: a stitch longer than the
+     length limit of the format that was not divided, or a failed round-trip.
+   - `warning`: a violation of a domain-guidance range (density, lettering minimums, hoop fit).
+   - `informational`: a needle-count re-thread note, or a jump count that is not optimized.
+4. **Write the report.** Use [`./templates/qa-report.md`](./templates/qa-report.md) to write
+   `docs/embroidery/<design>/_qa/qa-report-<date>.md`. Include each finding, cited per the rule set,
+   the rules that ran in skipped mode and the reason, and a closing verdict.
+5. **Verdict.**
+   - `PASS` — zero `blocks-production` findings. The report can still list warnings and
+     informational findings, with a note that the user acknowledged them.
+   - `ISSUES-FOUND` — one or more `blocks-production` findings. For each finding, name the upstream
+     skill that must repair it: `embroidery-digitize` for a content repair, `embroidery-optimize`
+     for a sequence repair, `embroidery-export` for a new export.
+6. **Self-check.** Make sure that each finding has a region id, a rule and a cited number. Before
+   you write the report, drop each finding without a citation. `reviewer` uses the same discipline
+   for code.
 7. **Handoff.** Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
-   — *Що я зробив* (verdict + finding count) + *Перевір перед тим як продовжити* (`qa-report.md`) + *Що далі*: `PASS` →
-   production-ready, resume whatever you were doing; `ISSUES-FOUND` → the named upstream skill for
-   each finding, then re-run `embroidery-qa <design>`.
+   — *Що я зробив* (verdict + finding count) + *Перевір перед тим як продовжити* (`qa-report.md`) + *Що далі*:
+   - `PASS` → production-ready. Continue the work that you did before.
+   - `ISSUES-FOUND` → for each finding, the named upstream skill. Then run `embroidery-qa <design>`
+     again.
 
 ## Definition of Done
 
 - `qa-report.md` exists with a `PASS` / `ISSUES-FOUND` verdict.
-- Every finding cites a region id, a rule, an actual value, and the doc-cited threshold — an
-  uncited finding does not appear in the report.
-- The report states which rules ran in skipped mode (missing domain doc) rather than silently
-  omitting them.
-- A `blocks-production` finding names the upstream skill that should fix it.
-- Step 6's citation discipline is this skill's **structural self-check**
-  ([`../_shared/self-check.md`](../_shared/self-check.md)); its result is reported in the handoff.
+- Each finding cites a region id, a rule, an actual value and the threshold from the document. A
+  finding without a citation is not in the report.
+- The report states which rules ran in skipped mode (missing domain document). It does not silently
+  omit them.
+- Each `blocks-production` finding names the upstream skill that must repair it.
+- The citation discipline of step 6 is the **structural self-check** of this skill
+  ([`../_shared/self-check.md`](../_shared/self-check.md)). The handoff reports its result.
 
 ## Anti-patterns
 
-- **An uncited "this looks off" finding.** Cite the region + rule + numbers, or drop it — the same
-  bar `reviewer` holds code findings to.
-- **Treating a `<!-- TBD -->`-sourced domain number as an authoritative pass/fail line** without
-  flagging that the threshold itself is unverified.
-- **Silently skipping a rule** because its domain doc is missing, with no note in the report — say
-  which rules didn't run and why.
-- **Editing the design to fix a finding.** This skill is read-only, like `reviewer`; it reports, the
-  named upstream skill fixes.
-- **A blanket PASS with unresolved warnings the user never saw.** Warnings/informational findings
-  are listed even on a PASS verdict — a clean report proves coverage, not silence.
+- **A "this looks off" finding without a citation.** Cite the region, the rule and the numbers, or
+  drop the finding. `reviewer` uses the same standard for code findings.
+- **Using a domain number with a `<!-- TBD -->` source as an authoritative pass/fail line** without
+  a flag that the threshold is not verified.
+- **Silently skipping a rule** because its domain document is missing, without a note in the report.
+  Say which rules did not run and why.
+- **Editing the design to repair a finding.** This skill is read-only, the same as `reviewer`. It
+  reports. The named upstream skill repairs.
+- **A general PASS with open warnings that the user did not see.** List warnings and informational
+  findings also on a PASS verdict. A clean report proves coverage, not silence.
 
 ## References & template
 
 - `docs/domain/embroidery/machine-constraints.md` · `stitch-vocabulary.md` — the rule thresholds
-  this skill cites.
+  that this skill cites.
 - [`../embroidery-export/templates/export-report.md`](../embroidery-export/templates/export-report.md)
-  — the round-trip result this skill's rule 8 reads when present.
-- [`../_shared/ask-style.md`](../_shared/ask-style.md) · [`../_shared/handoff.md`](../_shared/handoff.md) · [`../_shared/artifact-language.md`](../_shared/artifact-language.md).
-- [`./templates/qa-report.md`](./templates/qa-report.md) — output scaffold.
+  — the round-trip result that rule 8 of this skill reads when it is present.
+- [`../_shared/ask-style.md`](../_shared/ask-style.md) · [`../_shared/handoff.md`](../_shared/handoff.md) · [`../_shared/artifact-language.md`](../_shared/artifact-language.md) · [`../_shared/ste100.md`](../_shared/ste100.md).
+- [`./templates/qa-report.md`](./templates/qa-report.md) — the output scaffold.

@@ -8,8 +8,8 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Findings
 
-<!-- One row per finding. No row for a rule that simply passed — the "rules checked" count below
-     is the evidence coverage happened. -->
+<!-- One row for each finding. No row for a rule that passed. The "rules checked" count below
+     is the evidence of coverage. -->
 
 | Severity | Region | Rule | Value found | Threshold (source) | Fix via |
 |---|---|---|---|---|---|
@@ -24,5 +24,5 @@ updated_at: "<YYYY-MM-DD>"
 
 `PASS | ISSUES-FOUND`
 
-<!-- On PASS with open warnings/informational findings, note the user's acknowledgement here rather
-     than silently dropping them from view. -->
+<!-- On PASS with open warnings or informational findings, record here that the user acknowledged
+     them. Do not silently remove them from view. -->

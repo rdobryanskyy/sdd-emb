@@ -1,11 +1,11 @@
 # Structural self-check — the final-step verification contract every skill runs
 
-> **Reference-only.** Not a skill. Every skill verifies its own output before handing off —
-> this file is the one contract for how. A skill either runs a **named structural checklist**
-> (defined in its own SKILL.md, penultimate protocol step) or maps an existing heavy verifier
-> onto this contract (see «Heavy verifiers count» below). Either way, the SKILL.md names the
-> phrase **structural self-check** at the place where the contract is satisfied — that is the
-> greppable evidence the validator enforces.
+> **Reference-only.** Not a skill. Each skill examines its own output before the handoff.
+> This file is the one contract for how to do it. A skill either runs a **named structural
+> checklist** (in its own SKILL.md, in the penultimate protocol step), or it maps an existing
+> heavy verifier onto this contract (see «Heavy verifiers count» below). In both cases, the
+> SKILL.md writes the phrase **structural self-check** at the place where it satisfies the
+> contract. The validator greps for this phrase as evidence.
 
 ## TL;DR (короткий вступ українською)
 
@@ -15,44 +15,54 @@
 Скіли з важкими верифікаторами (critic, reviewer, drift-check, mermaid-check, GATE) не дублюють
 роботу — їхній верифікатор і **є** self-check; вони додають лише структурні пункти, які він не покриває.
 
+The English text of the artifact passes the ASD-STE100 self-check in [`./ste100.md`](./ste100.md)
+before the handoff.
+
 ## The contract (five steps)
 
-1. **Re-read the artifact from disk.** Never check the in-memory draft — the file as written is
-   what downstream stages read. (A skill that writes nothing — e.g. `interview`, `start` — checks
-   its emitted output against its DoD instead.)
-2. **Run the named checklist.** Each item is **structural and cheap to verify** — a grep, a count,
-   a file-exists test, an enum membership — not a judgment call. The checklist lives in the skill's
-   own SKILL.md (penultimate protocol step) and has a fixed item count, so the result is reportable
-   as `N/N`.
-3. **Fix + re-check, ≤2 cycles.** A failing item is fixed and the checklist re-run. Two fix cycles
-   maximum — an item still failing after that is *unresolved*, not retried forever.
-4. **Surface the unresolved — never silently.** Anything still failing is reported to the user with
-   the item name and what was tried. Silently committing a failing artifact is the one forbidden
-   move; a stated failure is acceptable, a hidden one is not.
-5. **Report in the handoff.** *Що я зробив* carries one line, in Ukrainian per
+1. **Read the artifact again from disk.** Never examine the draft in memory. Downstream stages
+   read the file as written. (A skill that writes nothing, for example `interview` or `start`,
+   examines its output against its DoD.)
+2. **Run the named checklist.** Each item is **structural and easy to examine**: a grep, a count,
+   a file-exists test, an enum membership. An item is not a judgment. The checklist is in the
+   SKILL.md of the skill (penultimate protocol step). It has a fixed item count, thus you can
+   report the result as `N/N`.
+3. **Correct and examine again, 2 cycles or fewer.** If an item fails, correct it and run the
+   checklist again. Do a maximum of two correction cycles. If an item still fails after that, it
+   is *unresolved*. Do not try it again and again.
+4. **Show the unresolved items to the user, never silently.** Report each item that still fails,
+   with the item name and the corrections that you tried. Do not silently commit an artifact that
+   fails. This is the one forbidden action. A stated failure is permitted. A hidden failure is not.
+5. **Report in the handoff.** *Що я зробив* contains one line, in Ukrainian per
    [`chat-language.md`](./chat-language.md): «самоперевірка: 6/6 пройдено» (or «самоперевірка: 5/6 —
    <failing item> не вирішено, див. вище»).
 
 ## Heavy verifiers count (no double work)
 
-A skill that already runs a heavy verifier — the clean-context **critic** (`specify`, `design`),
-the **reviewer** agent (`review`), the **devil's-advocate** sweep (`clarify`), the bidirectional
-**drift check** (`api`), the **mermaid re-validation** + coverage table (`sequences`), the
-4-mandatory **self-check** (`data-model`, `tasks`), the per-task **GATE** (`implement`, `fix`) —
-counts that verifier **as** its structural self-check. It does not bolt a second checklist on top;
-it adds **only the structural items the verifier doesn't cover** (e.g. «frontmatter stamped»,
-«file at the size-correct target») and still reports per step 5. The SKILL.md states the mapping
-in one literal sentence («<verifier> = this skill's structural self-check»).
+Some skills already run a heavy verifier:
+
+- the clean-context **critic** (`specify`, `design`);
+- the **reviewer** agent (`review`);
+- the **devil's-advocate** sweep (`clarify`);
+- the bidirectional **drift check** (`api`);
+- the **mermaid re-validation** and the coverage table (`sequences`);
+- the 4-mandatory **self-check** (`data-model`, `tasks`);
+- the per-task **GATE** (`implement`, `fix`).
+
+Such a skill counts that verifier **as** its structural self-check. It does not add a second
+checklist on top. It adds **only the structural items that the verifier does not cover** (for
+example «frontmatter stamped», «file at the size-correct target»). It still reports per step 5.
+The SKILL.md states the mapping in one literal sentence («<verifier> = this skill's structural self-check»).
 
 ## Anti-patterns
 
-- **Judgment items in the checklist.** «The spec is clear» is not checkable; «every §5 AC id
-  appears in the coverage table» is. Judgment belongs to the heavy verifiers.
-- **Checking the draft, not the disk.** The bug this contract exists to catch is the write that
-  didn't land the way the conversation assumed.
-- **Endless fix loops.** Two cycles, then surface. A checklist that can't converge in two fixes is
-  flagging a real problem the user must see.
-- **A silent pass.** The handoff line is mandatory even when everything passes — «самоперевірка: 6/6
+- **Judgment items in the checklist.** You cannot examine «The spec is clear». You can examine
+  «every §5 AC id appears in the coverage table». Judgment is the work of the heavy verifiers.
+- **Examination of the draft, not the disk.** This contract finds one bug: a write that did not
+  go to disk as the conversation expected.
+- **Correction loops that do not stop.** Do two cycles, then show the problem. If a checklist
+  cannot pass after two corrections, it shows a real problem that the user must see.
+- **A silent pass.** The handoff line is mandatory also when all items pass. «самоперевірка: 6/6
   пройдено» is one line of proof, not noise.
-- **Duplicating the heavy verifier.** If the critic already checked cross-section drift, the
-  checklist doesn't re-check it — only the structural leftovers.
+- **A copy of the heavy verifier.** If the critic already examined drift across sections, the
+  checklist does not examine it again. It examines only the structural items that are left.
