@@ -15,10 +15,10 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Notes
 
-<!-- Any metric that did NOT improve, and why (e.g. a hard ordering constraint from the digitize
-     step forced a longer path) — report honestly, do not omit. -->
+<!-- Each metric that did NOT improve, and the reason (for example, a hard order constraint from
+     the digitize step caused a longer path). Report it honestly. Do not omit it. -->
 
 ## Preserved constraints
 
-<!-- List every hard-ordering constraint carried over from stitch-plan.json's sequencing notes,
-     confirmed still respected in the optimized order. -->
+<!-- List each hard order constraint from the sequencing notes of stitch-plan.json. Confirm that
+     the optimized order still obeys it. -->

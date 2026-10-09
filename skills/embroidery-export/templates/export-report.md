@@ -34,5 +34,5 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Domain-doc facts relied upon
 
-<!-- Every <!-- TBD: verify --> marked fact this export leaned on, named explicitly so it isn't
-     silently trusted as verified. -->
+<!-- Each fact with a <!-- TBD: verify --> marker that this export used. Name it explicitly, so
+     that nobody silently trusts it as verified. -->

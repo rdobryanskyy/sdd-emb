@@ -1,6 +1,6 @@
 <!-- Template for `embroidery-digitize` — copied to docs/embroidery/<design>/stitch-plan.md. -->
-<!-- The paired stitch-plan.json (same directory) is the machine-readable twin consumed by -->
-<!-- embroidery-optimize / embroidery-export / embroidery-qa. Keep the two in agreement. -->
+<!-- The paired stitch-plan.json (same directory) is the machine-readable twin. -->
+<!-- embroidery-optimize / embroidery-export / embroidery-qa read it. Keep the two files in agreement. -->
 ---
 status: Draft
 updated_at: "<YYYY-MM-DD>"
@@ -16,7 +16,7 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Regions
 
-<!-- One subsection per region, in color-block sequence order. -->
+<!-- One subsection for each region, in the color-block sequence order. -->
 
 ### R1 — <descriptive name>
 
@@ -28,10 +28,10 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Sequencing notes
 
-<!-- Any hard ordering the design requires (e.g. appliqué's placement → tack-down → trim → cover),
-     and the color-grouping rationale for the rest. -->
+<!-- Each hard order that the design must have (for example, the appliqué sequence placement →
+     tack-down → trim → cover), and the reason for the color groups of the other regions. -->
 
 ## Open gaps
 
-<!-- Anything left <!-- N/A: reason --> or sourced from a domain doc's <!-- TBD: verify --> marker,
-     so embroidery-optimize/export/qa (and the user) don't silently trust it as verified. -->
+<!-- Each item that is <!-- N/A: reason --> or that comes from a <!-- TBD: verify --> marker in a
+     domain document. Then embroidery-optimize/export/qa (and the user) do not trust it as verified. -->

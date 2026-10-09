@@ -1,16 +1,25 @@
 # Embroidery domain overlay — conditional routing for SDD roles
 
-> **Reference-only.** This is not a pipeline stage and does not create an artifact. It gives the generic SDD agents a shared, evidence-first embroidery profile when the feature actually controls or produces machine-embroidery work. The normal SDD flow and every documentation template remain unchanged.
+> **Reference-only.** This file is not a pipeline stage and does not make an artifact. It gives the generic SDD agents one shared, evidence-first embroidery profile. Use it when the feature controls or makes machine-embroidery work. The normal SDD flow and all documentation templates do not change.
 
 ## When to activate it
 
-Activate the overlay when the task, feature artifacts, changed files, or code concern one or more of: a stitch plan; digitizing; stitch geometry; hoop or needle profiles; colour changes, jumps or trims; machine-file import/export/validation (`DST`, `PES`, `PEC`, `EXP`, `JEF`, `VP3`, `HUS`, `XXX`, `ART`, `EMB`); production scheduling for embroidery machines; or an `embedded-firmware` surface that drives such a machine. Do **not** activate merely because this plugin is installed.
+Activate the overlay when the task, the feature artifacts, the changed files or the code are about one or more of these items:
 
-The dispatcher states `embroidery domain overlay: active` in the agent prompt and names the relevant machine profile / format / design path. If the scope is unclear, the agent asks the dispatcher to route it rather than assuming that ordinary application code is embroidery code.
+- a stitch plan, digitizing or stitch geometry;
+- hoop or needle profiles;
+- colour changes, jumps or trims;
+- machine-file import, export or validation (`DST`, `PES`, `PEC`, `EXP`, `JEF`, `VP3`, `HUS`, `XXX`, `ART`, `EMB`);
+- production scheduling for embroidery machines;
+- an `embedded-firmware` surface that controls such a machine.
+
+Do **not** activate it only because this plugin is installed.
+
+The dispatcher writes `embroidery domain overlay: active` in the agent prompt. It also names the applicable machine profile, format or design path. If the scope is not clear, the agent asks the dispatcher to route it. The agent must not think that ordinary application code is embroidery code.
 
 ## Canonical evidence
 
-Read only the documents relevant to the stated scope, before judging or researching:
+Before you judge or research, read only the documents that apply to the stated scope:
 
 | Scope | Source of truth |
 |---|---|
@@ -20,16 +29,16 @@ Read only the documents relevant to the stated scope, before judging or research
 | Multi-head production, thread changes, stabilizers, time estimation | `docs/domain/embroidery/production.md` |
 | Project vocabulary | `CONTEXT.md` |
 
-An `<!-- TBD: verify -->` value is **not** a hard production limit. Agents may report that code treated it as authoritative, but must not invent a replacement threshold. A real, supplied machine profile or accepted feature contract takes precedence over generic guidance.
+An `<!-- TBD: verify -->` value is **not** a hard production limit. An agent can report that code used it as authoritative. The agent must not invent a replacement threshold. A real machine profile that the user supplied, or an accepted feature contract, has priority over generic guidance.
 
 ## Role-specific duties
 
-- **explorer / survey:** locate the actual machine boundaries, file readers/writers, geometry and unit conversions, profile/config sources, safety interlocks, simulators, fixtures, and the nearest tested precedent. Return citations; do not design a new machine protocol.
-- **researcher:** read the relevant local domain document first, then research only the unanswered question. Separate vendor capability claims from verified format or machine facts; include the model/format/version and source date in every claim.
-- **critic:** check that a spec/SAD has not turned an unverified generic number into a hard requirement, and that it names the machine profile, file format, units, and failure/abort path whenever they materially affect the feature. This is a coherence check, not a substitute for digitizing or QA.
-- **reviewer:** verify the implementation preserves coordinates/units, validates limits before machine/file output, handles malformed or unsupported inputs safely, does not fabricate binary formats, and has tests for the relevant boundary and round-trip/error path. Cite source code and the governing contract/domain rule for every finding.
-- **test-author / implementer:** turn the selected domain constraints into executable tests and explicit configuration. Never hard-code a generic or `TBD` value as a machine-specific fact; keep profile-dependent values configurable and validate before side effects.
+- **explorer / survey:** find the actual machine boundaries, file readers and writers, geometry and unit conversions, profile and configuration sources, safety interlocks, simulators, fixtures, and the nearest tested precedent. Give citations. Do not design a new machine protocol.
+- **researcher:** first read the applicable local domain document. Then research only the question that has no answer. Keep vendor capability claims separate from verified format or machine facts. In each claim, give the model, format or version and the source date.
+- **critic:** make sure that a spec or SAD does not change an unverified generic number into a hard requirement. Make sure that it names the machine profile, file format, units and failure/abort path when they have an effect on the feature. This is a coherence check. It does not replace digitizing or QA.
+- **reviewer:** make sure that the implementation keeps coordinates and units, validates limits before machine or file output, and handles malformed or unsupported input safely. Make sure that it does not invent binary formats, and that it has tests for the applicable boundary and the round-trip/error path. For each finding, cite the source code and the governing contract or domain rule.
+- **test-author / implementer:** change the selected domain constraints into executable tests and explicit configuration. Never hard-code a generic or `TBD` value as a machine-specific fact. Keep profile-dependent values configurable, and validate them before side effects.
 
 ## Escalation boundary
 
-This overlay improves the engineering process; it never claims a physical design is production-ready. When a change creates or mutates a stitch plan or exported machine file, `review` must also require the relevant `embroidery-qa` / `embroidery-export` evidence (or mark the feature not ready for production). No agent may approve a physical run solely from code review.
+This overlay makes the engineering process better. It never claims that a physical design is ready for production. When a change makes or changes a stitch plan or an exported machine file, `review` must also ask for the applicable `embroidery-qa` / `embroidery-export` evidence. If that evidence is not available, `review` marks the feature as not ready for production. No agent can approve a physical run only from code review.

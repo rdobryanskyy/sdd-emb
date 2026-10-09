@@ -1,60 +1,65 @@
 # Ask-style — junior-friendly bilingual `AskUserQuestion`
 
-> **Reference-only.** Not a skill. Every skill that calls `AskUserQuestion` reads this for the
-> canonical shape of questions and options. The rule: an **option label is the next mechanical
-> step the skill takes**, not just a name; the **description explains, in plain words, what will
-> happen** — written so a first-year junior can pick correctly without a senior beside them.
+> **Reference-only.** Not a skill. Each skill that calls `AskUserQuestion` reads this file for the
+> canonical shape of questions and options. The rule:
+>
+> - An **option label is the next mechanical step that the skill does**, not only a name.
+> - The **description tells, in plain words, what will occur**.
+> - Write them so that a first-year junior can select correctly without a senior near them.
 
-> **Volume vs. style.** How **many** questions a Q&A skill asks scales with the interview-depth dial
-> (easy asks few, hard asks all — see [`interview-depth.md`](./interview-depth.md)). The **per-question
-> explanatory rule below is unchanged at every depth** — even a single easy-level question is glossed
-> and explained in full. Depth tunes the count; it never licenses a dry question.
+> **Volume vs. style.** The **number** of questions that a Q&A skill asks changes with the
+> interview-depth dial: easy asks few, hard asks all (see [`interview-depth.md`](./interview-depth.md)).
+> The **explanation rule below for each question is the same at all depths**. Even a single
+> easy-level question gets glosses and a full explanation. Depth changes the count. It never
+> permits a dry question.
 
 ## The one rule that matters most
 
-**Never ask dryly.** The most common failure is a terse, jargon-dense question — a few words plus acronyms, no context — that forces the user to already know the project to answer. Fix it two ways, every time:
+**Never ask dryly.** The most frequent failure is a short question with too much jargon: a few words, some acronyms and no context. To answer it, the user must already know the project. Correct this in two ways, each time:
 
-1. **Gloss every technical term inline, on first use** — the plain meaning in parentheses, right there. Not «order by RICE» but «order by RICE — a quick score, Reach × Impact × Confidence ÷ Effort, where higher = more value per unit of work». Not «forces a worktree» but «forces a worktree — a separate working copy of the repo so two agents don't edit the same files». The reader should never have to look a term up to choose.
-2. **Spend the words on the WHY and the trade-off**, not the WHAT. A short label is fine; the *description* is where you explain — in plain language — what happens, what you gain and lose, and the hidden catch.
+1. **Gloss each technical term inline, at its first use.** Put the plain meaning in parentheses, at that position. Do not write «order by RICE». Write «order by RICE — a quick score, Reach × Impact × Confidence ÷ Effort, where higher = more value per unit of work». Do not write «forces a worktree». Write «forces a worktree — a separate working copy of the repo so two agents don't edit the same files». The reader must not have to look up a term to select an option.
+2. **Use the words for the WHY and the trade-off**, not for the WHAT. A short label is correct. The *description* is the place for the explanation. In plain language, tell what occurs, what you get, what you lose and what the hidden risk is.
 
-If a question reads like a config dump or a spec excerpt, it's wrong. Write it as if explaining the choice to a capable colleague who just joined and doesn't know your acronyms yet. **More explanation always beats less here** — a long, clear description is a feature, not bloat.
+If a question looks like a config dump or a part of a spec, it is wrong. Write it as an explanation for a capable new colleague who does not know your acronyms yet. **More explanation is always better than less here.** A long, clear description is a feature, not unnecessary text.
 
 ## Shape
 
 - **`question`** — 3–4 sentences in three blocks:
-  - **CONTEXT** — why this decision, what scenario to picture, what exactly we're deciding (one sentence with a concrete example).
-  - **WHY IT MATTERS** — which quality goal / NFR / spec vector it touches; reversibility (irreversible? multi-module? affects performance / security / UX?); the main trade-off in play.
-  - **READ OPTIONS** — a nudge to read the descriptions before choosing.
+  - **CONTEXT** — why this decision is necessary, what scenario to think about, and what exactly we decide (one sentence with a concrete example).
+  - **WHY IT MATTERS** — which quality goal / NFR / spec vector it touches. Is it reversible? Is it irreversible, multi-module, or does it affect performance / security / UX? What is the main trade-off?
+  - **READ OPTIONS** — a short request to read the descriptions before the user selects.
 - **Each option**:
-  - `label` — 1–5 words, **action form** = the next mechanical step: «Прийняти», «Виправити», «Винести у відкрите питання», «Викинути», «Зафіксувати як ADR». Add «(Recommended)» to the first option when you recommend it.
+  - `label` — 1–5 words, in **action form** = the next mechanical step: «Прийняти», «Виправити», «Винести у відкрите питання», «Викинути», «Зафіксувати як ADR». If you recommend the first option, add «(Recommended)» to it.
   - `description` — 3–5 sentences with four mandatory elements (below).
 
 ## The four mandatory elements of a `description`
 
-1. **What technically happens** — concrete names: tables / endpoints / files / ADR numbers. Not «modify the API» but «add field `is_active BOOLEAN` to table `members` and a new route in the module's handler».
-2. **What you gain / what you lose** — the trade-off in plain words, **every technical term glossed**:
+1. **What occurs technically** — use concrete names: tables / endpoints / files / ADR numbers. Do not write «modify the API». Write «add field `is_active BOOLEAN` to table `members` and a new route in the module's handler».
+2. **What you get / what you lose** — the trade-off in plain words. **Gloss each technical term**:
    - not «backfill migration» → «a script that walks every existing row and fills the new field; while it runs the rows are read-locked for writes»
    - not «cursor pagination» → «the client sends the last id it saw so the next page starts after it; avoids `OFFSET`, which slows down on large pages»
    - not «GIN index» → «a special index type that lets you search inside JSON columns, but takes 3–5× more space and writes slower»
-3. **The skill's next mechanical step** — «I spawn ADR-NNNN titled X, add a row to the §9 ADR table, the schema is locked for the data-model stage».
-4. **Hidden trade-off** — if there's a condition under which the choice breaks («only works if Redis is already in your stack», «in 6 months you'll need downtime for a backfill», «existing users have to re-login»), state it **right in the description**, not in a follow-up. A junior won't see that trigger on their own.
+3. **The next mechanical step of the skill** — «I spawn ADR-NNNN titled X, add a row to the §9 ADR table, the schema is locked for the data-model stage».
+4. **Hidden trade-off** — sometimes a condition can make the choice fail. Examples: «only works if Redis is already in your stack», «in 6 months you will need downtime for a backfill», «existing users have to re-login». If such a condition exists, write it **in the description**, not in a later question. A junior will not see that risk without help.
 
 ## Language
 
-- **Ukrainian throughout** — labels + descriptions. Technical identifiers stay in their original form (ADR, JSONB, JWT, UUID, FK, OpenAPI) — they are names. The *actions* are Ukrainian («Прийняти», «Відредагувати», «Винести у §11 OQ», «Видалити»).
-- Glossary roles and domain-invariant **names** (natural-language phrases like «no published lessons») are allowed — they are business terms.
-- This section governs **`AskUserQuestion` conversation** (question + option text) only. Two
-  neighboring, separately-scoped concerns: all *other* chat-facing narration (banners, refuse/warn
-  messages, the handoff block) is also always Ukrainian → [`chat-language.md`](./chat-language.md);
-  the language **documents** are *written in* is a separate per-project switch —
-  `artifact_language` in `.claude/sdd-emb.local.md` → [`artifact-language.md`](./artifact-language.md).
+- **Ukrainian for all text** — labels and descriptions. Technical identifiers stay in their original form (ADR, JSONB, JWT, UUID, FK, OpenAPI), because they are names. The *actions* are Ukrainian («Прийняти», «Відредагувати», «Винести у §11 OQ», «Видалити»).
+- Ukrainian text is out of the scope of ASD-STE100. If a question or an option contains English text, write it in ASD-STE100 → [`ste100.md`](./ste100.md).
+- You can use glossary roles and the **names** of domain invariants (natural-language phrases, for example «no published lessons»). They are business terms.
+- This section controls only the **`AskUserQuestion` conversation** (question and option text). Two
+  related topics have a different scope:
+  - All *other* chat-facing text (banners, refuse and warn messages, the handoff block) is also
+    always Ukrainian → [`chat-language.md`](./chat-language.md).
+  - The language of the **documents** is a separate switch for each project: `artifact_language`
+    in `.claude/sdd-emb.local.md` → [`artifact-language.md`](./artifact-language.md).
 
 ## Forbidden
 
-- Terse English labels («Approve», «Edit», «Drop», «Reword»).
-- One-line descriptions.
+- Short English labels without context («Approve», «Edit», «Drop», «Reword»).
+- Descriptions of one line.
 - Technical terms without a gloss (UNION, backfill, GIN, cursor, idempotent, transactional…).
-- Trade-offs hidden in a follow-up («if you pick this I'll later ask about X, which has complexity Y»).
+- Trade-offs that you keep for a later question («if you pick this I'll later ask about X, which has complexity Y»).
 
 ## Counter-example (deprecated) vs correct
 
@@ -94,24 +99,27 @@ Options:
 
 # EXPLANATORY (context + why + glossed terms — do this):
 Question:
-  "How should we decide the ORDER of the not-yet-started ideas in the roadmap's «Next» list?
-   This only affects which problem we pick up next — nothing is committed yet, and you can always
-   reorder. The trade-off: a scoring formula is more objective but takes a minute per idea; eyeballing
-   it is faster but drifts with mood. Read both options below."
+  "How do we set the ORDER of the ideas in the «Next» list of the roadmap? Nobody has started
+   these ideas yet. This choice only sets which problem we do next. Nothing is final, and you can
+   change the order at any time. The trade-off: a score formula is more objective, but it takes
+   one minute for each idea. An order by hand is faster, but it changes with your mood. Read
+   the two options below."
 Options:
   - label: "Score each idea (Recommended)"
-    description: "I rate every Next idea with RICE — a quick score = Reach (how many users it touches) ×
-      Impact (how much it moves the needle, 3 down to 0.25) × Confidence (how sure we are, as a %) ÷
-      Effort (rough person-weeks). It gives one sortable number per idea, so «Next» orders itself by
-      value-per-effort. You can still override any ranking by hand. Costs ~a minute of estimating per idea."
+    description: "I give each Next idea a RICE score. RICE = Reach (how many users it touches) ×
+      Impact (how much it helps, from 3 down to 0.25) × Confidence (how sure we are, as a %) ÷
+      Effort (person-weeks, approximate). Each idea gets one number, so «Next» sorts itself by
+      value for each unit of effort. You can still change any position by hand. It costs about
+      one minute of estimates for each idea."
   - label: "Just order them by hand"
-    description: "No formula — you (or I) drag the ideas into the order that feels right; row position =
-      priority. Faster and fine for a short list, but with many ideas it gets subjective and the order
-      tends to drift over time. You can switch to scoring later if the list grows."
+    description: "No formula. You (or I) move the ideas into the order that looks correct. The
+      row position = the priority. This is faster and good for a short list. With many ideas,
+      the order becomes subjective and it changes over time. If the list becomes long, you can
+      change to scores later."
 ```
 
-The dry version is unanswerable without knowing what RICE is; the explanatory version teaches the term in the act of asking and makes the trade-off obvious.
+The dry version has no answer if you do not know what RICE is. The explanatory version teaches the term in the question and makes the trade-off clear.
 
 ## Why (feedback, 2026-05-23 + reinforced 2026-05-29)
 
-The user is a PM, methodist, or junior dev opening the repo for the first time. Terse English questions give them neither the substance of the decision nor the difference between options. Verbatim (2026-05-23): «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці». Reinforced (2026-05-29): «при опитуваннях треба більш explanatory запитання і варіанти відповідей, бо зараз клод доволі сухо опитує і багато термінів на короткий текст» — i.e. the dryness + term-density was still happening, so this file now leads with the "never ask dryly / gloss every term" rule above.
+The user is a PM, a methodist or a junior developer who opens the repo for the first time. Short English questions do not give them the content of the decision or the difference between the options. Verbatim (2026-05-23): «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці». More feedback (2026-05-29): «при опитуваннях треба більш explanatory запитання і варіанти відповідей, бо зараз клод доволі сухо опитує і багато термінів на короткий текст». The dry questions and the high term density did not stop. Thus this file starts with the rule «never ask dryly / gloss every term» above.
